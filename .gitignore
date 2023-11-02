@@ -1,0 +1,9 @@
+/bower_components
+/node_modules
+/dist
+/out
+/build
+
+#files
+*.tgz
+*.log
