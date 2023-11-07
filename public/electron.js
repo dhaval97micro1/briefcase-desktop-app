@@ -2,6 +2,7 @@
 const { app, BrowserWindow, protocol } = require("electron");
 const path = require("path");
 const url = require("url");
+// const { shell } = require("electron");
 let mainWindow;
 
 // Create the native browser window.
@@ -20,6 +21,7 @@ function createWindow() {
     },
     // titleBarStyle: "hiddenInset", // Hide the default title bar (macOS)
     backgroundColor: "rgba(231,231,231, 1)",
+    icon: path.join(__dirname, "public/favicon.png"),
   });
 
   // In production, set the initial browser path to the local bundle generated
@@ -48,6 +50,11 @@ function createWindow() {
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
   }
+
+  // mainWindow.webContents.on("new-window", (e, url) => {
+  //   e.preventDefault();
+  //   shell.openExternal(url);
+  // });
 }
 
 // Setup a local proxy to adjust the paths of requested files when loading
@@ -98,8 +105,8 @@ app.on("web-contents-created", (event, contents) => {
   contents.on("will-navigate", (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl);
 
-    if (!allowedNavigationDestinations.includes(parsedUrl.origin)) {
-      event.preventDefault();
-    }
+    // if (!allowedNavigationDestinations.includes(parsedUrl.origin)) {
+    //   event.preventDefault();
+    // }
   });
 });

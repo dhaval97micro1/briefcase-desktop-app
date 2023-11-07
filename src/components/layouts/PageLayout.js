@@ -1,8 +1,14 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import { getToken } from "src/helpers/storage";
+import Sidebar from "../sidebar/Sidebar";
 const PageLayout = () => {
+  const isLoggedIn = getToken();
   return (
-    <div className="ml-5 bg-white rounded-lg h-[calc(100vh-32px)] flex-1">
-      {Outlet}
+    <div className="flex bg-white-500 rounded-lg h-[calc(100vh-100px)] w-full">
+      <Sidebar />
+      <div className="w-full">
+        {!isLoggedIn ? <Navigate to="/login" /> : <Outlet />}
+      </div>
     </div>
   );
 };
