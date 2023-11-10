@@ -11,6 +11,15 @@ import { getToken, setToken, storeUser } from "src/helpers/storage";
 import { useCallback, useEffect, useState } from "react";
 import auth from "src/helpers/http/auth";
 import classNames from "classnames";
+import { googleAuthProvider } from "../../firebase";
+// const { ipcRenderer } = require("electron");
+// import { ipcRenderer } from "electron";
+// const ElectronGoogleOAuth2 =
+//   require("@getstation/electron-google-oauth2").default;
+
+const url = window.location.href;
+const searchParams = new URLSearchParams(url);
+const oauthToken = searchParams.get("access_token");
 
 const firebaseConfig = {
   apiKey: "AIzaSyA_4LCImnqI8Oi7pS_RI6ewwV4014rQjzg",
@@ -26,20 +35,69 @@ const provider = new OAuthProvider("apple.com");
 provider.addScope("email");
 provider.addScope("name");
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+// if (!firebase.apps.length) {
+//   firebase.initializeApp(firebaseConfig);
+// }
 
-export const FAuth = firebase.auth();
-export const googleAuthProvider = new GoogleAuthProvider();
+// export const FAuth = firebase.auth();
+// export const googleAuthProvider = new GoogleAuthProvider();
 // export const appleProvider = new firebase.auth.OAuthProvider("apple.com");
-googleAuthProvider.setCustomParameters({
-  prompt: "select_account",
-  //   redirect_uri: "https://briefcase-b5d63.firebaseapp.com",
-});
+// googleAuthProvider.setCustomParameters({
+//   prompt: "select_account",
+//   //   redirect_uri: "https://briefcase-b5d63.firebaseapp.com",
+// });
 
 const Splash = () => {
+  const [oauthToken, setOAuthToken] = useState(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const myWindow: any = window;
+
+  const fetchGoogleProfile = useCallback(async (token: string) => {
+    try {
+      const response = await fetch(
+        "https://www.googleapis.com/oauth2/v1/userinfo",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const profileData = await response.json();
+        const userInfo = {
+          socialAccountType: "google",
+          email: profileData?.email,
+          socialId: profileData?.id,
+          firstName: profileData?.givenName,
+          lastName: profileData?.familyName,
+          userImage: profileData?.picture,
+        };
+        loginWithApi(userInfo);
+      } else {
+        console.error("Failed to fetch Google profile:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching Google profile:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Listen for data from Electron
+    if (myWindow.loginWGauth) {
+      myWindow.loginWGauth.onDataFromElectron((data: any) => {
+        // Update state with the received data
+        fetchGoogleProfile(data);
+      });
+
+      // Cleanup the listener when the component unmounts
+      // return () => {
+      //   myWindow.loginWGauth.removeAllListeners("data-from-electron");
+      // };
+    }
+  }, [fetchGoogleProfile, myWindow.loginWGauth]);
 
   const goToApp = useCallback(() => {
     window.location.replace("/#/documents");
@@ -59,26 +117,65 @@ const Splash = () => {
     }, 1000);
   }, [validateAuthentication]);
 
+  const { loginWGauth } = myWindow;
+
   const handleGoogleLogin = async () => {
     setIsLoading(true);
-    try {
-      const auth = getAuth();
-      const result: any = await signInWithPopup(auth, googleAuthProvider);
-      console.log("result: " + JSON.stringify(result));
-      const userInfo = result?.user;
-      const user: any = {
-        socialAccountType: "google",
-        email: userInfo?.email,
-        socialId: userInfo?.providerData[0]?.uid,
-        firstName: result?._tokenResponse?.firstName,
-        lastName: result?._tokenResponse?.lastName,
-        userImage: userInfo?.photoURL,
-      };
-      loginWithApi(user);
-    } catch (error: any) {
-      setIsLoading(false);
-      alert(JSON.stringify(error));
-    }
+    !!loginWGauth && loginWGauth.send("call-my-function", "Hellolo");
+    // const myApiOauth = new ElectronGoogleOAuth2(
+    //   "659220311316-1qh6kl8m9iamt58oh3dlgbg7j3qj93jh.apps.googleusercontent.com",
+    //   "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",
+    //   [
+    //     "https://www.googleapis.com/auth/userinfo.email",
+    //     "https://www.googleapis.com/auth/userinfo.profile",
+    //   ]
+    // );
+    // myApiOauth.openAuthWindowAndGetTokens().then((token) => {
+    //   console.log("TOKENN: " + token);
+    //   // use your token.access_token
+    // });
+    // const GOOGLE_AUTH_URL =
+    //   "https://accounts.google.com/o/oauth2/auth?client_id=659220311316-1qh6kl8m9iamt58oh3dlgbg7j3qj93jh.apps.googleusercontent.com&redirect_uri=http://localhost:3000&scope=profile email&response_type=code";
+    // const oauthPopup: any = window.open(GOOGLE_AUTH_URL);
+    // const pollPopup = () => {
+    //   try {
+    //     if (oauthPopup.location.href.startsWith("http://localhost:3000")) {
+    //       console.log(
+    //         "oauthPopup.location.search: " + oauthPopup.location.search
+    //       );
+    //       const oauthToken = oauthPopup.location.search.split("code=")[1];
+    //       console.log(oauthToken);
+    //       const token = oauthToken?.split("&scope")[0];
+    //       console.log("token: " + token);
+    //       clearInterval(pollInterval);
+    //       // Send the OAuth token to the main Electron process using IPC.
+    //       // ipcRenderer.send('oauth-callback', oauthToken);
+    //       oauthPopup.close();
+    //     }
+    //   } catch (error) {
+    //     // Ignore cross-origin security errors.
+    //   }
+    // };
+    // const pollInterval = setInterval(pollPopup, 3000);
+    // try {
+    //   const auth = getAuth();
+    //   const result: any = await signInWithPopup(auth, googleAuthProvider);
+    //   console.log("result: " + JSON.stringify(result));
+    //   const userInfo = result?.user;
+    //   const user: any = {
+    //     socialAccountType: "google",
+    //     email: userInfo?.email,
+    //     socialId: userInfo?.providerData[0]?.uid,
+    //     firstName: result?._tokenResponse?.firstName,
+    //     lastName: result?._tokenResponse?.lastName,
+    //     userImage: userInfo?.photoURL,
+    //   };
+    //   loginWithApi(user);
+    // } catch (error: any) {
+    //   setIsLoading(false);
+    //   console.log(error);
+    //   alert(JSON.stringify(error));
+    // }
   };
 
   const loginWithApi = async (user: any) => {
@@ -89,6 +186,7 @@ const Splash = () => {
         if (res?.statusCode) {
           if (res?.body?.accessToken) {
             await setToken(res?.body?.accessToken);
+            console.log("user: " + JSON.stringify(user));
             await storeUser({
               ...user,
               userId: res?.body?.userId,
@@ -98,11 +196,9 @@ const Splash = () => {
           }
         } else {
           setIsLoading(false);
-          //   showError(res?.message);
         }
       })
       .catch((err) => {
-        // showError(err);
         console.log("err: " + JSON.stringify(err));
         setIsLoading(false);
       });

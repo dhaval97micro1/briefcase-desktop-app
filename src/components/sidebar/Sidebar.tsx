@@ -53,6 +53,7 @@ const Sidebar = () => {
     await clearStorage();
     window.location.replace("/#/login");
   };
+  console.log("user?.userImage: " + user?.userImage);
   return (
     <div className="w-[25%] min-w-[352px] bg-white rounded-lg h-[calc(100vh-32px)] pt-6 flex flex-col">
       <div className="flex-1">

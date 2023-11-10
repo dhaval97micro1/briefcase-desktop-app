@@ -7,6 +7,7 @@ const todos = {
     return apiClient
       .post(`/users/${payload.userId}/tasks`, {
         q: payload.query,
+        id: payload.id,
       })
       .then((res) => {
         return res.data;

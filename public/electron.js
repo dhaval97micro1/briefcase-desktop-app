@@ -1,7 +1,10 @@
 // Module to control the application lifecycle and the native browser window.
-const { app, BrowserWindow, protocol } = require("electron");
+const { app, BrowserWindow, protocol, ipcMain } = require("electron");
 const path = require("path");
 const url = require("url");
+const { Notification } = require("electron");
+const ElectronGoogleOAuth2 =
+  require("@getstation/electron-google-oauth2").default;
 // const { shell } = require("electron");
 let mainWindow;
 
@@ -14,10 +17,12 @@ function createWindow() {
     minHeight: 600,
     // Set the path of an additional "preload" script that can be used to
     // communicate between node-land and browser-land.
-
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      // preload: path.join(__dirname, "preload.js"),
+      preload: __dirname + "/preload.js",
       nodeIntegration: true,
+      nativeWindowOpen: true,
+      webSecurity: false,
     },
     // titleBarStyle: "hiddenInset", // Hide the default title bar (macOS)
     backgroundColor: "rgba(231,231,231, 1)",
@@ -47,9 +52,9 @@ function createWindow() {
   );
 
   // Automatically open Chrome's DevTools in development mode.
-  if (!app.isPackaged) {
-    mainWindow.webContents.openDevTools();
-  }
+  // if (!app.isPackaged) {
+  mainWindow.webContents.openDevTools();
+  // }
 
   // mainWindow.webContents.on("new-window", (e, url) => {
   //   e.preventDefault();
@@ -71,6 +76,13 @@ function setupLocalFilesNormalizerProxy() {
     }
   );
 }
+
+exports.test = () => {
+  new Notification({
+    title: "hello1",
+    body: "hello222",
+  }).show();
+};
 
 // This method will be called when Electron has finished its initialization and
 // is ready to create the browser windows.
@@ -96,6 +108,51 @@ app.on("window-all-closed", function () {
     app.quit();
   }
 });
+
+function myFunction(data) {
+  // Do something in the main process
+  // console.log(`Received arguments: ${arg1}, ${arg2}`);
+  new Notification({
+    title: data,
+    body: data,
+  }).show();
+}
+
+ipcMain.on("call-my-function", (e, data) => {
+  const myApiOauth = new ElectronGoogleOAuth2(
+    "659220311316-1qh6kl8m9iamt58oh3dlgbg7j3qj93jh.apps.googleusercontent.com",
+    "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",
+    [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile",
+    ]
+  );
+
+  myApiOauth.openAuthWindowAndGetTokens().then((token) => {
+    // console.log("TOKENN: ", token);
+    mainWindow.webContents.send("data-from-electron", token.access_token);
+  });
+});
+
+// app.on("ready", () => {
+//   const myApiOauth = new ElectronGoogleOAuth2(
+//     "659220311316-1qh6kl8m9iamt58oh3dlgbg7j3qj93jh.apps.googleusercontent.com",
+//     "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",
+//     [
+//       "https://www.googleapis.com/auth/userinfo.email",
+//       "https://www.googleapis.com/auth/userinfo.profile",
+//     ]
+//   );
+
+//   myApiOauth.openAuthWindowAndGetTokens().then((token) => {
+//     console.log("TOKENN: ", token);
+//     new Notification({
+//       title: "TOKEN",
+//       body: JSON.stringify(token),
+//     }).show();
+//     // use your token.access_token
+//   });
+// });
 
 // If your app has no need to navigate or only needs to navigate to known pages,
 // it is a good idea to limit navigation outright to that known scope,

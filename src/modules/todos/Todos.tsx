@@ -1,7 +1,5 @@
-// import ComponentLayout from "../../components/layouts/ComponentLayout";
-
 import classNames from "classnames";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Loader from "src/components/chat/Loader";
 import MessageItem from "src/components/chat/MessageItem";
 import ReplyBox from "src/components/chat/ReplyBox";
@@ -13,7 +11,17 @@ import {
 } from "src/helpers/storage";
 import { MessageType } from "src/helpers/types/message.types";
 import todos from "../../helpers/http/todos";
+import { firebaseApp } from "../../firebase";
+import {
+  getDatabase,
+  ref,
+  query,
+  onChildAdded,
+  limitToLast,
+  orderByChild,
+} from "firebase/database";
 
+const database = getDatabase(firebaseApp);
 const MESSAGES = [
   {
     id: "1",
@@ -28,11 +36,42 @@ const Todos = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [userId, setUserId] = useState<string>("");
 
-  const getUniqueId = async () => {
+  const listenToFirebaseForNewMessages = useCallback(async (userId: string) => {
+    const messagesRef = ref(database, `messages/todo/${userId}`);
+    const messagesQuery = query(
+      messagesRef,
+      orderByChild("timestamp"), // Order by timestamp
+      limitToLast(10)
+    ); // Limit to the last 100 messages);
+    const unsubscribe = onChildAdded(messagesQuery, (snapshot) => {
+      const message = snapshot.val();
+      console.log(JSON.stringify(message));
+      // message: {
+      //   id: string;
+      //   message: string;
+      //   isSent: boolean;
+      // };
+      const newMessage = {
+        id: message?.messageId || message?.timestamp,
+        message: message?.message,
+        isSent: message?.sender === "user",
+      };
+      setMessages((prevMessages) => {
+        if (prevMessages.some((item) => item.id === newMessage.id)) {
+          return prevMessages; // Message already exists, do not update the state
+        } else {
+          return [...prevMessages, newMessage]; // Message is new, add it to the state
+        }
+      });
+    });
+  }, []);
+
+  const getUniqueId = useCallback(async () => {
     const userString = await getStoredUser();
     if (userString) {
       const userInfo = JSON.parse(userString);
       setUserId(userInfo.userId);
+      listenToFirebaseForNewMessages(userInfo.userId);
     }
     // const storedUniqueId = await localStorage.getItem("uniqueId");
     // if (storedUniqueId) {
@@ -42,11 +81,11 @@ const Todos = () => {
     //   setUserId(uniqueId + "");
     //   localStorage.setItem("uniqueId", uniqueId + "");
     // }
-  };
+  }, [listenToFirebaseForNewMessages]);
 
   useEffect(() => {
     getUniqueId();
-  }, []);
+  }, [getUniqueId]);
 
   const messagesEndRef = useRef<any>(null);
 
@@ -77,30 +116,25 @@ const Todos = () => {
   const onSend = (message: string) => {
     if (loading) return;
     const newMessageId = new Date().getTime();
-    storeToLocalStorage({
+    const newMessage = {
       message,
       id: `msg-${newMessageId}`,
       isSent: true,
-    });
+    };
+    storeToLocalStorage(newMessage);
     setTimeout(() => {
       setMessageText("");
       setLoading(true);
-      setMessages((prev) => [
-        ...prev,
-        {
-          message,
-          id: `msg-${newMessageId}`,
-          isSent: true,
-        },
-      ]);
-      submitQueryToAI(message);
+      setMessages((prev) => [...prev, newMessage]);
+      submitQueryToAI(newMessage);
     }, 300);
   };
 
-  const submitQueryToAI = (query: string) => {
+  const submitQueryToAI = (newMessage: { message: string; id: string }) => {
     const payload = {
-      query,
+      query: newMessage.message,
       userId,
+      id: newMessage.id,
     };
     todos
       .manageTodo(payload)
@@ -112,14 +146,14 @@ const Todos = () => {
             id: `msg-${newSysMessageId}`,
             isSent: false,
           });
-          setMessages((prev) => [
-            ...prev,
-            {
-              message: res?.body?.message || "Sorry, please try again!",
-              id: `msg-${newSysMessageId}`,
-              isSent: false,
-            },
-          ]);
+          // setMessages((prev) => [
+          //   ...prev,
+          //   {
+          //     message: res?.body?.message || "Sorry, please try again!",
+          //     id: `msg-${newSysMessageId}`,
+          //     isSent: false,
+          //   },
+          // ]);
         } else {
           console.log("Error");
         }
@@ -156,9 +190,9 @@ const Todos = () => {
     }
   };
 
-  useEffect(() => {
-    getLastMessages();
-  }, []);
+  // useEffect(() => {
+  //   getLastMessages();
+  // }, []);
 
   const deleteChat = async () => {
     await localStorage.removeItem("uniqueId");
@@ -169,14 +203,6 @@ const Todos = () => {
 
   return (
     <div className="ml-5 bg-white rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2">
-      {messages?.length > 1 && (
-        <div
-          onClick={deleteChat}
-          className="cursor-pointer self-end text-red-600 p-2 rounded-lg hover:bg-gray-100"
-        >
-          Clear chat
-        </div>
-      )}
       <div
         className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1"
         style={{
