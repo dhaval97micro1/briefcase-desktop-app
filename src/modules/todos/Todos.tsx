@@ -236,6 +236,10 @@ const Todos = () => {
         messageText={messageText}
         setMessageText={setMessageText}
         isLoading={loading}
+        fileType={null}
+        files={null}
+        setFiles={() => {}}
+        setFilesLoading={() => {}}
       />
     </div>
   );
