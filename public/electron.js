@@ -2,7 +2,6 @@
 const { app, BrowserWindow, protocol, ipcMain } = require("electron");
 const path = require("path");
 const url = require("url");
-const { Notification } = require("electron");
 const ElectronGoogleOAuth2 =
   require("@getstation/electron-google-oauth2").default;
 // const { shell } = require("electron");
@@ -52,14 +51,9 @@ function createWindow() {
   );
 
   // Automatically open Chrome's DevTools in development mode.
-  // if (!app.isPackaged) {
-  mainWindow.webContents.openDevTools();
-  // }
-
-  // mainWindow.webContents.on("new-window", (e, url) => {
-  //   e.preventDefault();
-  //   shell.openExternal(url);
-  // });
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools();
+  }
 }
 
 // Setup a local proxy to adjust the paths of requested files when loading
@@ -76,13 +70,6 @@ function setupLocalFilesNormalizerProxy() {
     }
   );
 }
-
-exports.test = () => {
-  new Notification({
-    title: "hello1",
-    body: "hello222",
-  }).show();
-};
 
 // This method will be called when Electron has finished its initialization and
 // is ready to create the browser windows.
@@ -109,15 +96,6 @@ app.on("window-all-closed", function () {
   }
 });
 
-function myFunction(data) {
-  // Do something in the main process
-  // console.log(`Received arguments: ${arg1}, ${arg2}`);
-  new Notification({
-    title: data,
-    body: data,
-  }).show();
-}
-
 ipcMain.on("call-my-function", (e, data) => {
   const myApiOauth = new ElectronGoogleOAuth2(
     "659220311316-1qh6kl8m9iamt58oh3dlgbg7j3qj93jh.apps.googleusercontent.com",
@@ -129,30 +107,9 @@ ipcMain.on("call-my-function", (e, data) => {
   );
 
   myApiOauth.openAuthWindowAndGetTokens().then((token) => {
-    // console.log("TOKENN: ", token);
     mainWindow.webContents.send("data-from-electron", token.access_token);
   });
 });
-
-// app.on("ready", () => {
-//   const myApiOauth = new ElectronGoogleOAuth2(
-//     "659220311316-1qh6kl8m9iamt58oh3dlgbg7j3qj93jh.apps.googleusercontent.com",
-//     "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",
-//     [
-//       "https://www.googleapis.com/auth/userinfo.email",
-//       "https://www.googleapis.com/auth/userinfo.profile",
-//     ]
-//   );
-
-//   myApiOauth.openAuthWindowAndGetTokens().then((token) => {
-//     console.log("TOKENN: ", token);
-//     new Notification({
-//       title: "TOKEN",
-//       body: JSON.stringify(token),
-//     }).show();
-//     // use your token.access_token
-//   });
-// });
 
 // If your app has no need to navigate or only needs to navigate to known pages,
 // it is a good idea to limit navigation outright to that known scope,

@@ -158,7 +158,7 @@ const Documents = () => {
         }}
       >
         {messages.map((item) => (
-          <MessageItem message={item} />
+          <MessageItem message={item} key={item.id} />
         ))}
         {loading && (
           <div className="flex px-4 mt-4">

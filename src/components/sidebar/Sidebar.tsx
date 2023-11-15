@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { clearStorage, getStoredUser } from "src/helpers/storage";
 import { UserDetailsType } from "src/helpers/types/user.types";
 import ProfileThumbnail from "../ProfileThumbnail";
@@ -36,6 +36,7 @@ const MENU = [
 const Sidebar = () => {
   const [user, setUser] = useState<UserDetailsType | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const getUser = async () => {
     const userString = await getStoredUser();
@@ -51,9 +52,9 @@ const Sidebar = () => {
 
   const logout = async () => {
     await clearStorage();
-    window.location.replace("/#/login");
+    navigate("/login");
   };
-  console.log("user?.userImage: " + user?.userImage);
+
   return (
     <div className="w-[25%] min-w-[352px] bg-white rounded-lg h-[calc(100vh-32px)] pt-6 flex flex-col">
       <div className="flex-1">
