@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getStoredUser } from "src/helpers/storage";
+import apiClient from "src/helpers/http/client";
 
 interface FileTagsProps {
 	fileType: string;
@@ -25,23 +26,21 @@ const FileTags: React.FC<FileTagsProps> = ({ fileType, filesLoading }) => {
 	useEffect(() => {
 		if (!userId) return;
 		console.log("userId", userId);
-        setLoading(true);
-		fetch(
-			`${"http://localhost:3000"}/dev/api/users/${userId}/files?file_type=${fileType}`
-		)
-			.then((response) => response.json())
+		setLoading(true);
+
+		apiClient.get(`/users/${userId}/files?file_type=${fileType}`)
+			.then((response) => response.data)
 			.then((data) => {
 				const files = data.map(
 					(file: any) => file?.file_name || "File"
 				);
 				setFiles(files);
-                setLoading(false);
+				setLoading(false);
 			})
 			.catch((error) => {
 				console.error(error);
-                setLoading(false);
+				setLoading(false);
 			});
-            
 	}, [userId, filesLoading]);
 
 	return (

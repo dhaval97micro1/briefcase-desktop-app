@@ -4,6 +4,7 @@ import PageLayout from "./components/layouts/PageLayout";
 import Documents from "./modules/documents/Documents";
 import Splash from "./modules/splash/Splash";
 import Todos from "./modules/todos/Todos";
+import Code from "./modules/code/Code";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/docs" element={<Documents key={'docs'} fileType={'docs'}/>} />
           <Route path="/sheets" element={<Documents key={'sheets'} fileType={'sheets'}/>} />
           <Route path="/todos" element={<Todos />} />
+          <Route path="/code" element={<Code />} />
         </Route>
         <Route index element={<Navigate to="/login" />} />
       </Routes>

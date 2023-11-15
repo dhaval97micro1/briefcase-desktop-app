@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import classNames from "classnames";
 import { FileIcon } from "@radix-ui/react-icons"; // Assuming Radix icons are used
 import { getStoredUser } from "src/helpers/storage";
+import apiClient from "src/helpers/http/client";
 
 type Props = {
 	messageText: string;
@@ -74,9 +74,9 @@ const ReplyBox = ({
 					file_name,
 					file_type: file_extension,
 				}; // Using file_extension instead of file_type
-				const apiUrl = `https://r6k1vdua19.execute-api.eu-north-1.amazonaws.com/dev/api/users/${userId}/files/upload`;
+				const apiUrl = `/users/${userId}/files/upload`;
 				setFilesLoading(true);
-				await axios.post(apiUrl, payload);
+				await apiClient.post(apiUrl, payload);
 				setFilesLoading(false);
 			}
 		}

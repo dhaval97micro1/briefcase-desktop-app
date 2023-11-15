@@ -10,3 +10,4 @@
 files/
 misc/
 db/
+.env

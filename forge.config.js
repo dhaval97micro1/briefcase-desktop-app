@@ -2,14 +2,12 @@ module.exports = {
   packagerConfig: {
     asar: true,
     icon: "public/images/MyApp.icns",
-    osxSign: {
-      identity: "FunFunFun INC. (7F58LG9JF7)",
-    },
+    osxSign: {},
     osxNotarize: {
       tool: "notarytool",
-      appleId: "dhaval@micro1.ai",
-      appleIdPassword: "uokj-eajh-nohp-alcn",
-      teamId: "7F58LG9JF7",
+      appleId: process.env.APPLE_ID,
+      appleIdPassword: process.env.APPLE_ID_PASSWORD,
+      teamId: process.env.TEAM_ID,
     },
   },
   rebuildConfig: {},

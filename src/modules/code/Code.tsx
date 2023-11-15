@@ -1,14 +1,19 @@
+// import ComponentLayout from "../../components/layouts/ComponentLayout";
+
+import classNames from "classnames";
 import { useEffect, useRef, useState } from "react";
-import FileTags from "src/components/chat/FileTags";
 import Loader from "src/components/chat/Loader";
 import MessageItem from "src/components/chat/MessageItem";
 import ReplyBox from "src/components/chat/ReplyBox";
-import docs from "src/helpers/http/docs";
-import { createPairs, getLastNElements } from "src/helpers/mics";
-import { getLastStoredDocsChat, storeDocsChat } from "src/helpers/storage";
+import { getLastNElements } from "src/helpers/mics";
+import {
+  getLastStoredTodos,
+  getStoredUser,
+  storeTodos,
+} from "src/helpers/storage";
 import { MessageType } from "src/helpers/types/message.types";
-import { getStoredUser } from "src/helpers/storage";
-import apiClient from "src/helpers/http/client";
+import todos from "../../helpers/http/todos";
+
 const MESSAGES = [
   {
     id: "1",
@@ -17,24 +22,40 @@ const MESSAGES = [
   },
 ];
 
-type DocProps = {
-  fileType: any;
-};
-
-const Documents = ({ fileType }: DocProps) => {
+const Code = () => {
   const [messages, setMessages] = useState<MessageType[]>([...MESSAGES]);
   const [messageText, setMessageText] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [files, setFiles] = useState<File[] | null>([]); 
-  const [filesLoading, setFilesLoading] = useState<boolean>(false); // New state for files loading
+  const [userId, setUserId] = useState<string>("");
+
+  const getUniqueId = async () => {
+    const userString = await getStoredUser();
+    if (userString) {
+      const userInfo = JSON.parse(userString);
+      setUserId(userInfo.userId);
+    }
+    // const storedUniqueId = await localStorage.getItem("uniqueId");
+    // if (storedUniqueId) {
+    //   setUserId(storedUniqueId);
+    // } else {
+    //   const uniqueId = await new Date().getTime();
+    //   setUserId(uniqueId + "");
+    //   localStorage.setItem("uniqueId", uniqueId + "");
+    // }
+  };
+
+  useEffect(() => {
+    getUniqueId();
+  }, []);
+
   const messagesEndRef = useRef<any>(null);
-  const user = getStoredUser();
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const storeToLocalStorage = async (newMsg: any) => {
-    const currentMsgsString = await getLastStoredDocsChat(fileType);
+    const currentMsgsString = await getLastStoredTodos();
     let currentMsgs = [];
     if (currentMsgsString) {
       currentMsgs = JSON.parse(currentMsgsString);
@@ -49,7 +70,8 @@ const Documents = ({ fileType }: DocProps) => {
     }
     const newMessages = [...currentMsgs, newMsg];
     const get100Msgs = await getLastNElements(newMessages, 100);
-    storeDocsChat(fileType, JSON.stringify(get100Msgs));
+    storeTodos(JSON.stringify(get100Msgs));
+    // const newMessages = getLastNElements()
   };
 
   const onSend = (message: string) => {
@@ -75,50 +97,37 @@ const Documents = ({ fileType }: DocProps) => {
     }, 300);
   };
 
-  const submitQueryToAI = async (query: string) => {
-    const currentMessages = [...messages];
-    const elementsExceptFirst = currentMessages.slice(1);
-    const last10Msgs = await getLastNElements(elementsExceptFirst, 10);
-    const last10MsgsText = last10Msgs?.map((i: any) => i?.message);
-    const history = await createPairs(last10MsgsText);
+  const submitQueryToAI = (query: string) => {
     const payload = {
-      q: query,
-      history: messages?.length > 2 ? history : [],
-      file_type: fileType,
+      query,
+      userId,
     };
-      try {
-        // @ts-ignore
-        let userId = JSON.parse(user)?.userId;
-        try {
-          const resp = await apiClient.post(`/users/${userId}/files/query?file_type=${fileType}&q=${query}`, payload);
-          const res = resp?.data;
-          if (res?.statusCode) {
-            const newSysMessageId = new Date().getTime();
-            storeToLocalStorage({
+    todos
+      .manageTodo(payload)
+      .then(async (res) => {
+        if (res?.statusCode) {
+          const newSysMessageId = new Date().getTime();
+          storeToLocalStorage({
+            message: res?.body?.message || "Sorry, please try again!",
+            id: `msg-${newSysMessageId}`,
+            isSent: false,
+          });
+          setMessages((prev) => [
+            ...prev,
+            {
               message: res?.body?.message || "Sorry, please try again!",
               id: `msg-${newSysMessageId}`,
               isSent: false,
-            });
-            setMessages((prev) => [
-              ...prev,
-              {
-                message: res?.body?.message || "Sorry, please try again!",
-                id: `msg-${newSysMessageId}`,
-                isSent: false,
-              },
-            ]);
-          } else {
-            console.log("Error");
-          }
-          setLoading(false);
-        } catch (error) {
-          setLoading(false);
+            },
+          ]);
+        } else {
+          console.log("Error");
         }
         setLoading(false);
-      }
-     catch (error) {
+      })
+      .catch(() => {
         setLoading(false);
-    }
+      });
   };
 
   const messagesAreaHeight = () => {
@@ -129,12 +138,16 @@ const Documents = ({ fileType }: DocProps) => {
     }
   };
 
+  const getCurrentToDoList = () => {
+    onSend("What’s my current to do list?");
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const getLastMessages = async () => {
-    const lastMessages = await getLastStoredDocsChat(fileType);
+    const lastMessages = await getLastStoredTodos();
     if (lastMessages) {
       const currentMsgs = await JSON.parse(lastMessages);
       setMessages(currentMsgs);
@@ -151,12 +164,11 @@ const Documents = ({ fileType }: DocProps) => {
     await localStorage.removeItem("uniqueId");
     await localStorage.removeItem("lastTodos");
     getLastMessages();
-    // @ts-ignore
-    setMessages([{message: "Hey there, lets get started!", id: "1", isSent: false}])
+    getUniqueId();
   };
 
   return (
-    <div className="ml-5 bg-white  rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2">
+    <div className="ml-5 bg-white rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2">
       {messages?.length > 1 && (
         <div
           onClick={deleteChat}
@@ -165,7 +177,6 @@ const Documents = ({ fileType }: DocProps) => {
           Clear chat
         </div>
       )}
-        <FileTags fileType={fileType} filesLoading={filesLoading} />
       <div
         className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1"
         style={{
@@ -173,7 +184,7 @@ const Documents = ({ fileType }: DocProps) => {
         }}
       >
         {messages.map((item) => (
-          <MessageItem message={item} key={item.id} />
+          <MessageItem message={item} />
         ))}
         {loading && (
           <div className="flex px-4 mt-4">
@@ -182,18 +193,30 @@ const Documents = ({ fileType }: DocProps) => {
         )}
         <div ref={messagesEndRef} />
       </div>
+      <div
+        onClick={getCurrentToDoList}
+        className={classNames(
+          "flex self-center text-sm text-[#A1A1AB] text-center mb-1 hover:text-[#84848b]",
+          {
+            "cursor-pointer": !loading,
+            "opacity-50": loading,
+          }
+        )}
+      >
+        Where did we have the last commit?
+      </div>
       <ReplyBox
         onSend={onSend}
         messageText={messageText}
         setMessageText={setMessageText}
         isLoading={loading}
-        fileType={fileType}
-        files={files}
-        setFiles={setFiles}
-        setFilesLoading={setFilesLoading}
+        fileType={null}
+        files={null}
+        setFiles={() => {}}
+        setFilesLoading={() => {}}
       />
     </div>
   );
 };
 
-export default Documents;
+export default Code;
