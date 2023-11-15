@@ -11,3 +11,4 @@ files/
 misc/
 db/
 .env
+.vscode/
