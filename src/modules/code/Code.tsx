@@ -90,7 +90,7 @@ const Documents = ({ fileType }: DocProps) => {
         // @ts-ignore
         let userId = JSON.parse(user)?.userId;
         try {
-          const resp = await apiClient.post(`/users/${userId}/files/query?file_type=${fileType}&q=${query}`, payload);
+          const resp = await apiClient.post(`/users/${userId}/code/query?file_type=${fileType}&q=${query}`, payload);
           const res = resp?.data;
           if (res?.statusCode) {
             const newSysMessageId = new Date().getTime();
@@ -149,7 +149,7 @@ const Documents = ({ fileType }: DocProps) => {
 
   const deleteChat = async () => {
     await localStorage.removeItem("uniqueId");
-    await localStorage.removeItem("lastDocsChat_"+ fileType);
+    await localStorage.removeItem("lastCode");
     getLastMessages();
     // @ts-ignore
     setMessages([{message: "Hey there, lets get started!", id: "1", isSent: false}])
@@ -165,7 +165,6 @@ const Documents = ({ fileType }: DocProps) => {
           Clear chat
         </div>
       )}
-        <FileTags fileType={fileType} filesLoading={filesLoading} />
       <div
         className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1"
         style={{
@@ -187,10 +186,10 @@ const Documents = ({ fileType }: DocProps) => {
         messageText={messageText}
         setMessageText={setMessageText}
         isLoading={loading}
-        boxType={fileType}
-        files={files}
-        setFiles={setFiles}
-        setFilesLoading={setFilesLoading}
+        boxType={"code"}
+        files={null}
+        setFiles={() => {}}
+        setFilesLoading={() => {}}
       />
     </div>
   );
