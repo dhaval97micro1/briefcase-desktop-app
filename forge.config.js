@@ -5,9 +5,9 @@ module.exports = {
     osxSign: {},
     osxNotarize: {
       tool: "notarytool",
-      appleId: process.env.APPLE_ID,
-      appleIdPassword: process.env.APPLE_ID_PASSWORD,
-      teamId: process.env.TEAM_ID,
+      appleId: "ojas@sycarus.com",
+      appleIdPassword: "swey-cgfb-xszl-xaap",
+      teamId: "7F58LG9JF7",
     },
   },
   rebuildConfig: {},

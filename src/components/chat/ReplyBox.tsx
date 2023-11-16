@@ -9,7 +9,7 @@ type Props = {
 	setMessageText: (value: string) => void;
 	onSend: (msg: string) => void;
 	isLoading?: boolean;
-	fileType: any;
+	boxType: any;
 	files: File[] | null; // New state for files
 	setFiles: (files: File[]) => void; // Function to update files state
 	setFilesLoading: (filesLoading: boolean) => void; // Function to update files loading state
@@ -20,7 +20,7 @@ const ReplyBox = ({
 	messageText,
 	setMessageText,
 	isLoading,
-	fileType,
+	boxType,
 	files,
 	setFiles,
 	setFilesLoading,

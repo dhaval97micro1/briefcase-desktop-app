@@ -149,7 +149,7 @@ const Documents = ({ fileType }: DocProps) => {
 
   const deleteChat = async () => {
     await localStorage.removeItem("uniqueId");
-    await localStorage.removeItem("lastTodos");
+    await localStorage.removeItem("lastDocsChat_"+ fileType);
     getLastMessages();
     // @ts-ignore
     setMessages([{message: "Hey there, lets get started!", id: "1", isSent: false}])
@@ -187,7 +187,7 @@ const Documents = ({ fileType }: DocProps) => {
         messageText={messageText}
         setMessageText={setMessageText}
         isLoading={loading}
-        fileType={fileType}
+        boxType={fileType}
         files={files}
         setFiles={setFiles}
         setFilesLoading={setFilesLoading}

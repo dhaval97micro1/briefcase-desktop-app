@@ -236,7 +236,7 @@ const Todos = () => {
         messageText={messageText}
         setMessageText={setMessageText}
         isLoading={loading}
-        fileType={null}
+        boxType={"todos"}
         files={null}
         setFiles={() => {}}
         setFilesLoading={() => {}}

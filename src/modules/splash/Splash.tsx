@@ -58,7 +58,7 @@ const Splash = () => {
   }, [fetchGoogleProfile]);
 
   const goToApp = useCallback(() => {
-    navigate("/documents");
+    navigate("/docs");
   }, []);
 
   const validateAuthentication = useCallback(async () => {
@@ -78,6 +78,7 @@ const Splash = () => {
   const { loginWGauth } = myWindow;
 
   const handleGoogleLogin = async () => {
+    console.log("loginWGauth", loginWGauth);
     if (loginWGauth) {
       setIsLoading(true);
       loginWGauth.send("call-my-function", "G-auth");
