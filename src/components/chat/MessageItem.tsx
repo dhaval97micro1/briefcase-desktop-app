@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import styled from "styled-components";
+import ReactMarkdown from 'react-markdown';
 
 type Props = {
   message: {
@@ -63,7 +64,9 @@ const MessageItem = ({ message }: Props) => {
             "bg-[#E0E2F8] system-message": !message.isSent,
           })}
         >
-          <pre>{message.message}</pre>
+          <pre>
+          <ReactMarkdown>{message.message}
+          </ReactMarkdown></pre>
         </div>
       </StyledMessageBubble>
     </div>
