@@ -30,7 +30,7 @@ const Documents = ({ fileType }: DocProps) => {
   const messagesEndRef = useRef<any>(null);
   const user = getStoredUser();
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({  behavior: "instant"  });
   };
 
   const storeToLocalStorage = async (newMsg: any) => {
