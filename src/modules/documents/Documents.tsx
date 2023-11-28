@@ -30,7 +30,7 @@ const Documents = ({ fileType }: DocProps) => {
   const messagesEndRef = useRef<any>(null);
   const user = getStoredUser();
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
   const storeToLocalStorage = async (newMsg: any) => {
@@ -121,6 +121,36 @@ const Documents = ({ fileType }: DocProps) => {
     }
   };
 
+  const handleUserChatHistory = async () => {
+  
+    try {
+      // Call the api at  /api/users/{userId}/files/query/chat-history and getthe list of chat history frm openai
+      // @ts-ignore
+      let userId = JSON.parse(user)?.userId;
+      const resp = await apiClient.get(`/users/${userId}/files/query/chat-history?file_type=${fileType}`);
+      const res = resp?.data;
+      if (res?.statusCode) {
+        // Store the chat history in local storage
+        // This function will be called only once when the user opens the chat for the first time
+
+        let messages = res?.body?.chatHistory;
+        console.log(messages);
+
+
+        storeDocsChat(fileType, JSON.stringify(messages));
+
+        getLastMessages();
+        
+      } else {
+        console.log("Error");
+      }
+     
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  }
+
   const messagesAreaHeight = () => {
     const replyBoxHeight = document.getElementById("reply-box")?.offsetHeight;
     if (replyBoxHeight) {
@@ -154,6 +184,12 @@ const Documents = ({ fileType }: DocProps) => {
     // @ts-ignore
     setMessages([{message: "Hey there, lets get started!", id: "1", isSent: false}])
   };
+
+  useEffect(() => {
+    if (user) {
+      handleUserChatHistory();
+    }
+  }, []);
 
   return (
     <div className="ml-5 bg-white  rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2">
