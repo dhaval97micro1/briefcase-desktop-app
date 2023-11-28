@@ -1,9 +1,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 import "./App.css";
 import PageLayout from "./components/layouts/PageLayout";
 import Documents from "./modules/documents/Documents";
 import Splash from "./modules/splash/Splash";
 import Todos from "./modules/todos/Todos";
+import Notes from "./modules/notes/Notes";
+import NoteDetails from "./modules/note-details/NoteDetails";
 
 function App() {
   return (
@@ -13,9 +16,12 @@ function App() {
         <Route element={<PageLayout />}>
           <Route path="/documents" element={<Documents />} />
           <Route path="/todos" element={<Todos />} />
+          <Route path="/notes" element={<Notes />} />
+          <Route path="/note-details" element={<NoteDetails />} />
         </Route>
         <Route index element={<Navigate to="/login" />} />
       </Routes>
+      <Toaster />
     </div>
   );
 }

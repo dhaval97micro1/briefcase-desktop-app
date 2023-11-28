@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "isolatedModules": true,
@@ -9,6 +10,7 @@
     "strict": true,
     "moduleResolution": "node",
     "baseUrl": ".",
+    // "noImplicitAny": false,
     "paths": {
       "src/*": ["src/*"],
       "components/*": ["src/components/*"],
