@@ -30,7 +30,7 @@ const Documents = ({ fileType }: DocProps) => {
   const messagesEndRef = useRef<any>(null);
   const user = getStoredUser();
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const storeToLocalStorage = async (newMsg: any) => {
@@ -90,7 +90,7 @@ const Documents = ({ fileType }: DocProps) => {
         // @ts-ignore
         let userId = JSON.parse(user)?.userId;
         try {
-          const resp = await apiClient.post(`/users/${userId}/files/query?file_type=${fileType}&q=${query}`, payload);
+          const resp = await apiClient.post(`/users/${userId}/code/query?file_type=${fileType}&q=${query}`, payload);
           const res = resp?.data;
           if (res?.statusCode) {
             const newSysMessageId = new Date().getTime();
@@ -121,36 +121,6 @@ const Documents = ({ fileType }: DocProps) => {
     }
   };
 
-  const handleUserChatHistory = async () => {
-  
-    try {
-      // Call the api at  /api/users/{userId}/files/query/chat-history and getthe list of chat history frm openai
-      // @ts-ignore
-      let userId = JSON.parse(user)?.userId;
-      const resp = await apiClient.get(`/users/${userId}/files/query/chat-history?file_type=${fileType}`);
-      const res = resp?.data;
-      if (res?.statusCode) {
-        // Store the chat history in local storage
-        // This function will be called only once when the user opens the chat for the first time
-
-        let messages = res?.body?.chatHistory;
-        console.log(messages);
-
-
-        storeDocsChat(fileType, JSON.stringify(messages));
-
-        getLastMessages();
-        
-      } else {
-        console.log("Error");
-      }
-     
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-    }
-  }
-
   const messagesAreaHeight = () => {
     const replyBoxHeight = document.getElementById("reply-box")?.offsetHeight;
     if (replyBoxHeight) {
@@ -179,20 +149,14 @@ const Documents = ({ fileType }: DocProps) => {
 
   const deleteChat = async () => {
     await localStorage.removeItem("uniqueId");
-    await localStorage.removeItem("lastDocsChat_"+ fileType);
+    await localStorage.removeItem("lastCode");
     getLastMessages();
     // @ts-ignore
     setMessages([{message: "Hey there, lets get started!", id: "1", isSent: false}])
   };
 
-  useEffect(() => {
-    if (user) {
-      handleUserChatHistory();
-    }
-  }, []);
-
   return (
-    <div className="ml-5 bg-white  rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2">
+    <div className="ml-5 bg-white flex flex-row rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2">
       {messages?.length > 1 && (
         <div
           onClick={deleteChat}
@@ -201,7 +165,6 @@ const Documents = ({ fileType }: DocProps) => {
           Clear chat
         </div>
       )}
-        <FileTags fileType={fileType} filesLoading={filesLoading} />
       <div
         className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1"
         style={{
@@ -218,16 +181,34 @@ const Documents = ({ fileType }: DocProps) => {
         )}
         <div ref={messagesEndRef} />
       </div>
+      <div className="flex w-full">
+        <div className="p-0 mt-10">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={45}
+        height={45}
+        fill="none"
+      >
+        <path
+          fill="currentColor"
+          fillRule="evenodd"
+          d="M7.5.25a7.25 7.25 0 0 0-2.292 14.13c.363.066.495-.158.495-.35 0-.172-.006-.628-.01-1.233-2.016.438-2.442-.972-2.442-.972-.33-.838-.805-1.06-.805-1.06-.658-.45.05-.441.05-.441.728.051 1.11.747 1.11.747.647 1.108 1.697.788 2.11.602.066-.468.254-.788.46-.969-1.61-.183-3.302-.805-3.302-3.583 0-.792.283-1.438.747-1.945-.075-.184-.324-.92.07-1.92 0 0 .61-.194 1.994.744A6.963 6.963 0 0 1 7.5 3.756 6.97 6.97 0 0 1 9.315 4c1.384-.938 1.992-.743 1.992-.743.396.998.147 1.735.072 1.919.465.507.745 1.153.745 1.945 0 2.785-1.695 3.398-3.31 3.577.26.224.492.667.492 1.343 0 .97-.009 1.751-.009 1.989 0 .194.131.42.499.349A7.25 7.25 0 0 0 7.499.25Z"
+          clipRule="evenodd"
+        />
+      </svg>
+      </div>
+
       <ReplyBox
         onSend={onSend}
         messageText={messageText}
         setMessageText={setMessageText}
         isLoading={loading}
-        boxType={fileType}
-        files={files}
-        setFiles={setFiles}
-        setFilesLoading={setFilesLoading}
-      />
+        boxType={"code"}
+        files={null}
+        setFiles={() => {}}
+        setFilesLoading={() => {}}
+        />
+        </div>
     </div>
   );
 };

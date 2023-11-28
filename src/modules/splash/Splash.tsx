@@ -1,48 +1,64 @@
-import firebase from "firebase/compat/app";
+import { useCallback, useEffect, useState } from "react";
+import classNames from "classnames";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
-import {
-  OAuthProvider,
-  GoogleAuthProvider,
-  getAuth,
-  signInWithPopup,
-} from "firebase/auth";
 import { getToken, setToken, storeUser } from "src/helpers/storage";
-import { useCallback, useEffect, useState } from "react";
 import auth from "src/helpers/http/auth";
-import classNames from "classnames";
+import { useNavigate } from "react-router";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA_4LCImnqI8Oi7pS_RI6ewwV4014rQjzg",
-  authDomain: "briefcase-b5d63.firebaseapp.com",
-  databaseURL: "https://briefcase-b5d63-default-rtdb.firebaseio.com",
-  projectId: "briefcase-b5d63",
-  storageBucket: "briefcase-b5d63.appspot.com",
-  messagingSenderId: "1017978940318",
-  appId: "1:1017978940318:web:74d9927285b9fc2a7f448f",
-  measurementId: "G-JJ3EBHFQXG",
-};
-const provider = new OAuthProvider("apple.com");
-provider.addScope("email");
-provider.addScope("name");
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-export const FAuth = firebase.auth();
-export const googleAuthProvider = new GoogleAuthProvider();
-// export const appleProvider = new firebase.auth.OAuthProvider("apple.com");
-googleAuthProvider.setCustomParameters({
-  prompt: "select_account",
-  //   redirect_uri: "https://briefcase-b5d63.firebaseapp.com",
-});
+const myWindow: any = window;
 
 const Splash = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const fetchGoogleProfile = useCallback(async (token: string) => {
+    try {
+      const response = await fetch(
+        "https://www.googleapis.com/oauth2/v1/userinfo",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const profileData = await response.json();
+        const userInfo = {
+          socialAccountType: "google",
+          email: profileData?.email,
+          socialId: profileData?.id,
+          firstName: profileData?.given_name,
+          lastName: profileData?.family_name,
+          userImage: profileData?.picture,
+        };
+        loginWithApi(userInfo);
+      } else {
+        console.error("Failed to fetch Google profile:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching Google profile:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Listen for data from Electron
+    if (myWindow.loginWGauth) {
+      myWindow.loginWGauth.onDataFromElectron((data: any) => {
+        fetchGoogleProfile(data);
+      });
+
+      // Cleanup the listener when the component unmounts
+      // return () => {
+      //   myWindow.loginWGauth.removeAllListeners("data-from-electron");
+      // };
+    }
+  }, [fetchGoogleProfile]);
 
   const goToApp = useCallback(() => {
-    window.location.replace("/#/documents");
+    navigate("/docs");
   }, []);
 
   const validateAuthentication = useCallback(async () => {
@@ -59,25 +75,14 @@ const Splash = () => {
     }, 1000);
   }, [validateAuthentication]);
 
+  const { loginWGauth } = myWindow;
+
   const handleGoogleLogin = async () => {
-    setIsLoading(true);
-    try {
-      const auth = getAuth();
-      const result: any = await signInWithPopup(auth, googleAuthProvider);
-      console.log("result: " + JSON.stringify(result));
-      const userInfo = result?.user;
-      const user: any = {
-        socialAccountType: "google",
-        email: userInfo?.email,
-        socialId: userInfo?.providerData[0]?.uid,
-        firstName: result?._tokenResponse?.firstName,
-        lastName: result?._tokenResponse?.lastName,
-        userImage: userInfo?.photoURL,
-      };
-      loginWithApi(user);
-    } catch (error: any) {
-      setIsLoading(false);
-      alert(JSON.stringify(error));
+    console.log("loginWGauth", loginWGauth);
+    if (loginWGauth) {
+      setIsLoading(true);
+      loginWGauth.send("call-my-function", "G-auth");
+    } else {
     }
   };
 
@@ -85,7 +90,6 @@ const Splash = () => {
     auth
       .login(user)
       .then(async (res) => {
-        console.log("api res: ", res);
         if (res?.statusCode) {
           if (res?.body?.accessToken) {
             await setToken(res?.body?.accessToken);
@@ -94,15 +98,13 @@ const Splash = () => {
               userId: res?.body?.userId,
             });
             setIsLoading(false);
-            window.location.replace("/#/documents");
+            goToApp();
           }
         } else {
           setIsLoading(false);
-          //   showError(res?.message);
         }
       })
       .catch((err) => {
-        // showError(err);
         console.log("err: " + JSON.stringify(err));
         setIsLoading(false);
       });

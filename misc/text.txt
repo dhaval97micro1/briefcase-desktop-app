@@ -1,8 +1,14 @@
+APPLE_ID=ojas@sycarus.com
+APPLE_PASSWORD=swey-cgfb-xszl-xaap
+APPLE_TEAM_ID=7F58LG9JF7
+
+
+
+
 module.exports = {
   packagerConfig: {
     asar: true,
     icon: "public/images/MyApp.icns",
-    osxSign: {},
     osxNotarize: {
       tool: "notarytool",
       appleId: "ojas@sycarus.com",

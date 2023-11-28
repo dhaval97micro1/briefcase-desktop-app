@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { clearStorage, getStoredUser } from "src/helpers/storage";
 import { UserDetailsType } from "src/helpers/types/user.types";
 import ProfileThumbnail from "../ProfileThumbnail";
@@ -9,7 +9,7 @@ const MENU = [
   {
     title: "Documents",
     subtitle: "Get answers, generate scenarios and content.",
-    path: "/documents",
+    path: "/docs",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
         <path
@@ -17,6 +17,27 @@ const MENU = [
           fill="black"
         />
       </svg>
+    ),
+  },
+  {
+    title: "Spreadsheets",
+    subtitle: "Query numbers, build reports and chart anything.",
+    path: "/sheets",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path
+          d="M15.0591 0.880005H7.93769C7.52927 0.880005 7.13753 1.04228 6.84872 1.33104C6.5599 1.61986 6.39769 2.01159 6.39769 2.42V4.4H4.41769C4.00927 4.4 3.61753 4.56228 3.32872 4.85104C3.0399 5.13986 2.87769 5.53159 2.87769 5.94V19.58C2.87769 19.9884 3.03989 20.3802 3.32872 20.669C3.61755 20.9577 4.00927 21.12 4.41769 21.12H14.0625C14.4709 21.12 14.8626 20.9577 15.1515 20.669C15.4403 20.3801 15.6025 19.9884 15.6025 19.58V17.6H17.5825C17.9909 17.6 18.3826 17.4377 18.6715 17.149C18.9603 16.8601 19.1225 16.4684 19.1225 16.06V4.675C19.1223 4.61406 19.0968 4.55584 19.0521 4.51437L15.2087 0.939374C15.1682 0.901418 15.1147 0.880219 15.0591 0.880005ZM15.2791 1.6038L18.3459 4.4638H15.2791V1.6038ZM14.0625 20.6796H4.4177C4.12595 20.6796 3.84614 20.5638 3.63989 20.3574C3.43357 20.1512 3.3177 19.8714 3.3177 19.5796V5.93964C3.3177 5.64788 3.43358 5.36808 3.63989 5.16183C3.84614 4.9555 4.12595 4.83964 4.4177 4.83964H11.3191V8.19464C11.3191 8.253 11.3423 8.30894 11.3836 8.35018C11.4248 8.39144 11.4808 8.41464 11.5391 8.41464H15.1625V19.5796C15.1625 19.8714 15.0466 20.1512 14.8403 20.3574C14.6341 20.5638 14.3543 20.6796 14.0625 20.6796ZM11.7591 5.12344L14.8259 7.98344H11.7591V5.12344ZM17.5825 17.1596H15.6025V8.19464C15.6024 8.13369 15.5769 8.07547 15.5321 8.03401L11.6887 4.45901C11.6482 4.42105 11.5947 4.39985 11.5391 4.39964H6.8377V2.41964C6.8377 2.12788 6.95358 1.84808 7.15989 1.64183C7.36614 1.4355 7.64595 1.31964 7.9377 1.31964H14.8391V4.67464C14.8391 4.733 14.8623 4.78894 14.9036 4.83019C14.9448 4.87144 15.0008 4.89464 15.0591 4.89464H18.6825V16.0596C18.6825 16.3514 18.5666 16.6312 18.3603 16.8374C18.1541 17.0438 17.8743 17.1596 17.5825 17.1596Z"
+          fill="black"
+        />
+      </svg>
+    ),
+  },
+  {
+    title: "Code",
+    subtitle: "Know your repos, get ahead of bugs & ship fast.",
+    path: "/code",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.877075 7.49985C0.877075 3.84216 3.84222 0.877014 7.49991 0.877014C11.1576 0.877014 14.1227 3.84216 14.1227 7.49985C14.1227 11.1575 11.1576 14.1227 7.49991 14.1227C3.84222 14.1227 0.877075 11.1575 0.877075 7.49985ZM3.78135 3.21565C4.68298 2.43239 5.83429 1.92904 7.09998 1.84089V6.53429L3.78135 3.21565ZM3.21567 3.78134C2.43242 4.68298 1.92909 5.83428 1.84095 7.09997H6.5343L3.21567 3.78134ZM6.5343 7.89997H1.84097C1.92916 9.16562 2.43253 10.3169 3.21579 11.2185L6.5343 7.89997ZM3.78149 11.7842C4.6831 12.5673 5.83435 13.0707 7.09998 13.1588V8.46566L3.78149 11.7842ZM7.89998 8.46566V13.1588C9.16559 13.0706 10.3168 12.5673 11.2184 11.7841L7.89998 8.46566ZM11.7841 11.2184C12.5673 10.3168 13.0707 9.16558 13.1588 7.89997H8.46567L11.7841 11.2184ZM8.46567 7.09997H13.1589C13.0707 5.83432 12.5674 4.68305 11.7842 3.78143L8.46567 7.09997ZM11.2185 3.21573C10.3169 2.43246 9.16565 1.92909 7.89998 1.8409V6.53429L11.2185 3.21573Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
     ),
   },
   {
@@ -36,6 +57,7 @@ const MENU = [
 const Sidebar = () => {
   const [user, setUser] = useState<UserDetailsType | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const getUser = async () => {
     const userString = await getStoredUser();
@@ -51,8 +73,9 @@ const Sidebar = () => {
 
   const logout = async () => {
     await clearStorage();
-    window.location.replace("/#/login");
+    navigate("/login");
   };
+
   return (
     <div className="w-[25%] min-w-[352px] bg-white rounded-lg h-[calc(100vh-32px)] pt-6 flex flex-col">
       <div className="flex-1">

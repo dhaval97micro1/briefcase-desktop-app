@@ -1,7 +1,9 @@
 // Module to control the application lifecycle and the native browser window.
-const { app, BrowserWindow, protocol } = require("electron");
+const { app, BrowserWindow, protocol, ipcMain } = require("electron");
 const path = require("path");
 const url = require("url");
+const ElectronGoogleOAuth2 =
+  require("@getstation/electron-google-oauth2").default;
 // const { shell } = require("electron");
 let mainWindow;
 
@@ -14,10 +16,12 @@ function createWindow() {
     minHeight: 600,
     // Set the path of an additional "preload" script that can be used to
     // communicate between node-land and browser-land.
-
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      // preload: path.join(__dirname, "preload.js"),
+      preload: __dirname + "/preload.js",
       nodeIntegration: true,
+      nativeWindowOpen: true,
+      webSecurity: false,
     },
     // titleBarStyle: "hiddenInset", // Hide the default title bar (macOS)
     backgroundColor: "rgba(231,231,231, 1)",
@@ -50,11 +54,6 @@ function createWindow() {
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
   }
-
-  // mainWindow.webContents.on("new-window", (e, url) => {
-  //   e.preventDefault();
-  //   shell.openExternal(url);
-  // });
 }
 
 // Setup a local proxy to adjust the paths of requested files when loading
@@ -95,6 +94,21 @@ app.on("window-all-closed", function () {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+ipcMain.on("call-my-function", (e, data) => {
+  const myApiOauth = new ElectronGoogleOAuth2(
+    "659220311316-1qh6kl8m9iamt58oh3dlgbg7j3qj93jh.apps.googleusercontent.com",
+    "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",
+    [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile",
+    ]
+  );
+
+  myApiOauth.openAuthWindowAndGetTokens().then((token) => {
+    mainWindow.webContents.send("data-from-electron", token.access_token);
+  });
 });
 
 // If your app has no need to navigate or only needs to navigate to known pages,
