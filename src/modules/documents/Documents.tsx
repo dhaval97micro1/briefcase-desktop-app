@@ -30,7 +30,7 @@ const Documents = ({ fileType }: DocProps) => {
   const messagesEndRef = useRef<any>(null);
   const user = getStoredUser();
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
   };
 
   const storeToLocalStorage = async (newMsg: any) => {
@@ -136,6 +136,8 @@ const Documents = ({ fileType }: DocProps) => {
         let messages = res?.body?.chatHistory;
         console.log(messages);
 
+        // Reverse messages array
+        messages = messages.reverse();
 
         storeDocsChat(fileType, JSON.stringify(messages));
 
