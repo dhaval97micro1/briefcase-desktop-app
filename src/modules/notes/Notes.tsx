@@ -15,13 +15,14 @@ import { firebaseApp } from "../../firebase";
 import { getStoredUser } from "src/helpers/storage";
 import NoteItem from "./components/NoteItem";
 import Recorder from "./components/Recorder";
+import NotesLoader from "src/components/loaders/NotesLoader";
 
 const database = getDatabase(firebaseApp);
 
 const Notes = () => {
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [userId, setUserId] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const sortNotes = (notes: any) => {
     return notes.sort((a: any, b: any) => {
@@ -38,6 +39,7 @@ const Notes = () => {
       const message = snapshot.val();
       console.log(JSON.stringify(message));
       setNotes((prev) => sortNotes([message, ...prev])); // Use the sorting function
+      setLoading(false);
     });
 
     const notesUpdationQuery = query(messagesRef);
@@ -48,6 +50,7 @@ const Notes = () => {
         setNotes((prevNotes) =>
           prevNotes.map((note) => (note.id === message.id ? message : note))
         );
+        setLoading(false);
       }
     );
 
@@ -64,6 +67,7 @@ const Notes = () => {
         setNotes((prevNotes) =>
           prevNotes.filter((note) => note.id !== message.id)
         );
+        setLoading(false);
       }
     );
   }, []);
@@ -90,11 +94,14 @@ const Notes = () => {
   return (
     <div className="ml-5 bg-white rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start gap-2">
       <div className="flex flex-col w-full h-full">
-        <div className="notes-list flex flex-col gap-6 flex-1 overflow-auto p-6 shadow-sm">
-          {notes?.map((note: NoteType) => (
-            <NoteItem note={note} />
-          ))}
-        </div>
+        {loading && <NotesLoader />}
+        {!loading && (
+          <div className="notes-list flex flex-col gap-6 flex-1 overflow-y-auto overflow-x-hidden p-6 shadow-sm">
+            {notes?.map((note: NoteType) => (
+              <NoteItem note={note} />
+            ))}
+          </div>
+        )}
         <Recorder userId={userId} />
       </div>
     </div>

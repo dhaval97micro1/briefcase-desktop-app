@@ -15,9 +15,15 @@ type Props = {
   editMode?: boolean;
   userId?: string;
   onEditComplete?: (note: NoteType) => void;
+  existingNote?: NoteType | null;
 };
 
-const Recorder = ({ editMode, userId, onEditComplete }: Props) => {
+const Recorder = ({
+  editMode,
+  userId,
+  onEditComplete,
+  existingNote,
+}: Props) => {
   const navigate = useNavigate();
   const [isRecording, setRecording] = useState<boolean>(false);
   const [isSummarizing, setIsSummarizing] = useState<boolean>(false);
@@ -72,10 +78,10 @@ const Recorder = ({ editMode, userId, onEditComplete }: Props) => {
 
     const formData: any = new FormData();
     formData.append("key", file);
-    // if (editMode && !!existingNote) {
-    //   formData.append('existingNotes', existingNote.summary);
-    //   formData.append('isEditing', true);
-    // }
+    if (editMode && !!existingNote) {
+      formData.append("existingNotes", existingNote.summary);
+      formData.append("isEditing", true);
+    }
 
     try {
       const response = await axios.post(apiUrl, formData, {

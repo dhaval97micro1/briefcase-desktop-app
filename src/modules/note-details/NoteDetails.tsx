@@ -19,6 +19,10 @@ import { useLocation, useNavigate } from "react-router";
 import notes from "src/helpers/http/notes";
 import { showError, showMsg } from "src/helpers/mics";
 import Spinner from "src/components/spinner";
+import WrappedContent from "src/components/WrappedContent";
+import styled from "styled-components";
+
+const Wrapper = styled.div``;
 
 const database = getDatabase(firebaseApp);
 
@@ -154,8 +158,20 @@ const NoteDetails = () => {
     });
   };
 
+  useEffect(() => {
+    if (!!editingByText && !!noteSummary) {
+      const input: any = document.getElementById("edit-note-box");
+      if (input) {
+        const end = input.value.length;
+
+        input.setSelectionRange(end, end);
+        input.focus();
+      }
+    }
+  }, [editingByText, noteSummary]);
+
   return (
-    <div className="ml-5 bg-white rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start gap-2">
+    <Wrapper className="ml-5 bg-white rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start gap-2">
       <div className="flex justify-between items-end w-full pr-4">
         <div
           className="flex items-center mx-5 mt-5 gap-3 cursor-pointer hover:opacity-75"
@@ -178,6 +194,15 @@ const NoteDetails = () => {
           <span className="font-medium">Back</span>
         </div>
         <div className="flex items-center gap-2">
+          {!!editingByText && (
+            <button
+              disabled={loading}
+              className="mr-2 rounded-md"
+              onClick={onSave}
+            >
+              {!loading ? "Done" : <Spinner size={10} />}
+            </button>
+          )}
           <button onClick={handleDelete} disabled={isDeleting}>
             {!isDeleting ? (
               <svg
@@ -262,7 +287,7 @@ const NoteDetails = () => {
                   title="Tap to edit"
                   onClick={startEditingBytext}
                 >
-                  {note.summary}
+                  <WrappedContent>{note.summary}</WrappedContent>
                 </pre>
               )}
               {!!editingByText && (
@@ -270,25 +295,23 @@ const NoteDetails = () => {
                   <textarea
                     value={noteSummary}
                     onChange={onChangeSummary}
-                    className="w-[700px] max-w-full p-4 mt-4 rounded-lg border border-solid border-[orange]"
+                    className="w-[700px] max-w-full p-4 rounded-lg outline-none"
                     autoFocus
                     rows={6}
+                    id="edit-note-box"
                   />
-                  <button
-                    disabled={loading}
-                    className="ml-auto mt-2 bg-[orange] text-white p-2 px-4 rounded-md"
-                    onClick={onSave}
-                  >
-                    {!loading ? "Save" : "Saving..."}
-                  </button>
                 </div>
               )}
             </div>
           )}
         </div>
-        <Recorder editMode onEditComplete={onEditComplete} />
+        <Recorder
+          editMode
+          onEditComplete={onEditComplete}
+          existingNote={note}
+        />
       </div>
-    </div>
+    </Wrapper>
   );
 };
 

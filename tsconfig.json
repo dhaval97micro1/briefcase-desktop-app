@@ -25,5 +25,6 @@
     "target": "esnext",
     "types": ["jest"]
   },
-  "exclude": ["node_modules", "babel.config.js", "metro.config.js"]
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js"],
+  "include": ["src/components", "src/**/*"]
 }
