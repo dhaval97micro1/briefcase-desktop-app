@@ -64,22 +64,24 @@ const ReplyBox = ({
   const uploadFiles = async (filesToUpload: File[]) => {
     openSidePanel && openSidePanel();
     if (filesToUpload && userId) {
-      for (const file of filesToUpload) {
+      setFilesLoading(true);
+      const uploadPromises = filesToUpload.map(async (file) => {
         const file_b64 = await toBase64(file);
         const file_name = file.name;
         // Extracting file extension
         const file_extension = file_name.split(".").pop();
-
+  
         const payload = {
           file_b64,
           file_name,
           file_type: file_extension,
         }; // Using file_extension instead of file_type
         const apiUrl = `/users/${userId}/files/upload`;
-        setFilesLoading(true);
-        await apiClient.post(apiUrl, payload);
-        setFilesLoading(false);
-      }
+        return apiClient.post(apiUrl, payload);
+      });
+  
+      await Promise.all(uploadPromises);
+      setFilesLoading(false);
     }
   };
 
