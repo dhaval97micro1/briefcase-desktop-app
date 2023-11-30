@@ -30,6 +30,19 @@ function App() {
             path="/code"
             element={<Code key={"code"} fileType={"code"} />}
           />
+          <Route
+            path="/docs"
+            element={<Documents key={"docs"} fileType={"docs"} />}
+          />
+          <Route
+            path="/sheets"
+            element={<Documents key={"sheets"} fileType={"sheets"} />}
+          />
+          <Route path="/todos" element={<Todos />} />
+          <Route
+            path="/code"
+            element={<Code key={"code"} fileType={"code"} />}
+          />
         </Route>
         <Route index element={<Navigate to="/login" />} />
       </Routes>
