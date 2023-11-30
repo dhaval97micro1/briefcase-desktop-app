@@ -90,7 +90,7 @@ const Todos = () => {
   const messagesEndRef = useRef<any>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({  behavior: "instant"  });
   };
 
   const storeToLocalStorage = async (newMsg: any) => {

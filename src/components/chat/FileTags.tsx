@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getStoredUser } from "src/helpers/storage";
 import apiClient from "src/helpers/http/client";
-
+import { Cross1Icon } from "@radix-ui/react-icons";
 interface FileTagsProps {
 	fileType: string;
 	filesLoading: boolean;
@@ -9,7 +9,7 @@ interface FileTagsProps {
 
 const FileTags: React.FC<FileTagsProps> = ({ fileType, filesLoading }) => {
 	console.log("fileType", fileType);
-	const [files, setFiles] = useState<string[]>([]);
+	const [files, setFiles] = useState<any[]>([]);
 	const [userId, setUserId] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(true);
 	useEffect(() => {
@@ -23,7 +23,7 @@ const FileTags: React.FC<FileTagsProps> = ({ fileType, filesLoading }) => {
 		}
 	}, [fileType]);
 
-	useEffect(() => {
+	const fetchFiles = () => {
 		if (!userId) return;
 		console.log("userId", userId);
 		setLoading(true);
@@ -31,9 +31,7 @@ const FileTags: React.FC<FileTagsProps> = ({ fileType, filesLoading }) => {
 		apiClient.get(`/users/${userId}/files?file_type=${fileType}`)
 			.then((response) => response.data)
 			.then((data) => {
-				const files = data.map(
-					(file: any) => file?.file_name || "File"
-				);
+				const files = data;
 				setFiles(files);
 				setLoading(false);
 			})
@@ -41,7 +39,25 @@ const FileTags: React.FC<FileTagsProps> = ({ fileType, filesLoading }) => {
 				console.error(error);
 				setLoading(false);
 			});
+	};
+
+	useEffect(() => {
+		fetchFiles();
 	}, [userId, filesLoading]);
+
+
+	async function handleDeleteFile(fileId: string) {
+		console.log("fileId", fileId);
+		setLoading(true);
+		try {
+			await apiClient.delete(`/users/${userId}/files/${fileId}`);
+			await fetchFiles();
+			setLoading(false);
+		} catch (error) {
+			console.error(error);
+			setLoading(false);
+		}
+	}
 
 	return (
 		<div className="overflow-x-auto bg-white  max-w-2xl no-scrollbar">
@@ -51,9 +67,10 @@ const FileTags: React.FC<FileTagsProps> = ({ fileType, filesLoading }) => {
 						Loading...
 					</span>
 				)}
-				{files.map((fileName) => (
+				{files.map((file) => (
 					<span className="bg-blue-500 text-white px-2 py-1 rounded-full mr-2 whitespace-nowrap">
-						{fileName}
+						{file?.file_name}
+						<Cross1Icon className="inline-block w-4 h-4 ml-1" onClick={() => handleDeleteFile(file.file_id)} />
 					</span>
 				))}
                 {

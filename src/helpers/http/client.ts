@@ -4,7 +4,7 @@ import { getToken, removeToken } from "../storage";
 // const DEV_URL =
 //   'https://r6k1vdua19.execute-api.eu-north-1.amazonaws.com/dev/api';
 const API_URL ="https://r6k1vdua19.execute-api.eu-north-1.amazonaws.com/dev/api";
- //const API_URL = "http://localhost:3000/dev/api";
+//const API_URL = "http://localhost:3000/dev/api";
 
 const onResponse = (response: AxiosResponse): AxiosResponse => {
   // console.info(`[response] [${JSON.stringify(response)}]`);
