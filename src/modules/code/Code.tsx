@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import FileTags from "src/components/chat/FileTags";
 import Loader from "src/components/chat/Loader";
 import MessageItem from "src/components/chat/MessageItem";
 import ReplyBox from "src/components/chat/ReplyBox";
@@ -25,7 +24,7 @@ const Documents = ({ fileType }: DocProps) => {
   const [messages, setMessages] = useState<MessageType[]>([...MESSAGES]);
   const [messageText, setMessageText] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [files, setFiles] = useState<File[] | null>([]); 
+  const [files, setFiles] = useState<File[] | null>([]);
   const [filesLoading, setFilesLoading] = useState<boolean>(false); // New state for files loading
   const messagesEndRef = useRef<any>(null);
   const user = getStoredUser();
@@ -86,38 +85,40 @@ const Documents = ({ fileType }: DocProps) => {
       history: messages?.length > 2 ? history : [],
       file_type: fileType,
     };
+    try {
+      // @ts-ignore
+      let userId = JSON.parse(user)?.userId;
       try {
-        // @ts-ignore
-        let userId = JSON.parse(user)?.userId;
-        try {
-          const resp = await apiClient.post(`/users/${userId}/code/query?file_type=${fileType}&q=${query}`, payload);
-          const res = resp?.data;
-          if (res?.statusCode) {
-            const newSysMessageId = new Date().getTime();
-            storeToLocalStorage({
+        const resp = await apiClient.post(
+          `/users/${userId}/code/query?file_type=${fileType}&q=${query}`,
+          payload
+        );
+        const res = resp?.data;
+        if (res?.statusCode) {
+          const newSysMessageId = new Date().getTime();
+          storeToLocalStorage({
+            message: res?.body?.message || "Sorry, please try again!",
+            id: `msg-${newSysMessageId}`,
+            isSent: false,
+          });
+          setMessages((prev) => [
+            ...prev,
+            {
               message: res?.body?.message || "Sorry, please try again!",
               id: `msg-${newSysMessageId}`,
               isSent: false,
-            });
-            setMessages((prev) => [
-              ...prev,
-              {
-                message: res?.body?.message || "Sorry, please try again!",
-                id: `msg-${newSysMessageId}`,
-                isSent: false,
-              },
-            ]);
-          } else {
-            console.log("Error");
-          }
-          setLoading(false);
-        } catch (error) {
-          setLoading(false);
+            },
+          ]);
+        } else {
+          console.log("Error");
         }
         setLoading(false);
-      }
-     catch (error) {
+      } catch (error) {
         setLoading(false);
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
     }
   };
 
@@ -152,7 +153,9 @@ const Documents = ({ fileType }: DocProps) => {
     await localStorage.removeItem("lastCode");
     getLastMessages();
     // @ts-ignore
-    setMessages([{message: "Hey there, lets get started!", id: "1", isSent: false}])
+    setMessages([
+      { message: "Hey there, lets get started!", id: "1", isSent: false },
+    ]);
   };
 
   return (
@@ -186,7 +189,6 @@ const Documents = ({ fileType }: DocProps) => {
         messageText={messageText}
         setMessageText={setMessageText}
         isLoading={loading}
-        boxType={"code"}
         files={null}
         setFiles={() => {}}
         setFilesLoading={() => {}}

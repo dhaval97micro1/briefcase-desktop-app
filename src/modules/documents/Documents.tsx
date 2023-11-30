@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import FileTags from "src/components/chat/FileTags";
 import Loader from "src/components/chat/Loader";
 import MessageItem from "src/components/chat/MessageItem";
 import ReplyBox from "src/components/chat/ReplyBox";
-import docs from "src/helpers/http/docs";
 import { createPairs, getLastNElements } from "src/helpers/mics";
 import { getLastStoredDocsChat, storeDocsChat } from "src/helpers/storage";
 import { MessageType } from "src/helpers/types/message.types";
 import { getStoredUser } from "src/helpers/storage";
 import apiClient from "src/helpers/http/client";
+import FilesMenu from "./FilesMenu";
 const MESSAGES = [
   {
     id: "1",
@@ -25,10 +24,12 @@ const Documents = ({ fileType }: DocProps) => {
   const [messages, setMessages] = useState<MessageType[]>([...MESSAGES]);
   const [messageText, setMessageText] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [files, setFiles] = useState<File[] | null>([]); 
+  const [files, setFiles] = useState<File[] | null>([]);
   const [filesLoading, setFilesLoading] = useState<boolean>(false); // New state for files loading
   const messagesEndRef = useRef<any>(null);
   const user = getStoredUser();
+  const [showFilesMenu, setShowFilesMenu] = useState<boolean>(false);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -86,38 +87,40 @@ const Documents = ({ fileType }: DocProps) => {
       history: messages?.length > 2 ? history : [],
       file_type: fileType,
     };
+    try {
+      // @ts-ignore
+      let userId = JSON.parse(user)?.userId;
       try {
-        // @ts-ignore
-        let userId = JSON.parse(user)?.userId;
-        try {
-          const resp = await apiClient.post(`/users/${userId}/files/query?file_type=${fileType}&q=${query}`, payload);
-          const res = resp?.data;
-          if (res?.statusCode) {
-            const newSysMessageId = new Date().getTime();
-            storeToLocalStorage({
+        const resp = await apiClient.post(
+          `/users/${userId}/files/query?file_type=${fileType}&q=${query}`,
+          payload
+        );
+        const res = resp?.data;
+        if (res?.statusCode) {
+          const newSysMessageId = new Date().getTime();
+          storeToLocalStorage({
+            message: res?.body?.message || "Sorry, please try again!",
+            id: `msg-${newSysMessageId}`,
+            isSent: false,
+          });
+          setMessages((prev) => [
+            ...prev,
+            {
               message: res?.body?.message || "Sorry, please try again!",
               id: `msg-${newSysMessageId}`,
               isSent: false,
-            });
-            setMessages((prev) => [
-              ...prev,
-              {
-                message: res?.body?.message || "Sorry, please try again!",
-                id: `msg-${newSysMessageId}`,
-                isSent: false,
-              },
-            ]);
-          } else {
-            console.log("Error");
-          }
-          setLoading(false);
-        } catch (error) {
-          setLoading(false);
+            },
+          ]);
+        } else {
+          console.log("Error");
         }
         setLoading(false);
-      }
-     catch (error) {
+      } catch (error) {
         setLoading(false);
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
     }
   };
 
@@ -149,51 +152,100 @@ const Documents = ({ fileType }: DocProps) => {
 
   const deleteChat = async () => {
     await localStorage.removeItem("uniqueId");
-    await localStorage.removeItem("lastDocsChat_"+ fileType);
+    await localStorage.removeItem("lastDocsChat_" + fileType);
     getLastMessages();
     // @ts-ignore
-    setMessages([{message: "Hey there, lets get started!", id: "1", isSent: false}])
+    setMessages([
+      { message: "Hey there, lets get started!", id: "1", isSent: false },
+    ]);
+  };
+
+  const toggleFilesMenu = () => {
+    setShowFilesMenu((prev) => !prev);
   };
 
   return (
-    <div className="ml-5 bg-white  rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2">
-      {messages?.length > 1 && (
+    <div className="ml-5 bg-white  rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2 overflow-x-hidden">
+      {!showFilesMenu && (
         <div
-          onClick={deleteChat}
-          className="cursor-pointer self-end text-red-600 p-2 rounded-lg hover:bg-gray-100"
+          onClick={toggleFilesMenu}
+          className="z-[9] cursor-pointer p-2 rounded-lg hover:bg-gray-100 border border-solid border-[#EAEAEA] absolute right-10"
         >
-          Clear chat
+          <MenuIcon />
         </div>
       )}
-        <FileTags fileType={fileType} filesLoading={filesLoading} />
-      <div
-        className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1"
-        style={{
-          height: messagesAreaHeight(),
-        }}
-      >
-        {messages.map((item) => (
-          <MessageItem message={item} key={item.id} />
-        ))}
-        {loading && (
-          <div className="flex px-4 mt-4">
-            <Loader />
+      <div className="flex w-full flex-1 overflow-y-auto overflow-x-hidden pr-1 mb-1">
+        <div className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1">
+          <div
+            className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1"
+            style={{
+              height: messagesAreaHeight(),
+            }}
+          >
+            {messages.map((item) => (
+              <MessageItem message={item} key={item.id} />
+            ))}
+            {loading && (
+              <div className="flex px-4 mt-4">
+                <Loader />
+              </div>
+            )}
+            <div ref={messagesEndRef} />
           </div>
-        )}
-        <div ref={messagesEndRef} />
+          <ReplyBox
+            onSend={onSend}
+            messageText={messageText}
+            setMessageText={setMessageText}
+            isLoading={loading}
+            files={files}
+            setFiles={setFiles}
+            setFilesLoading={setFilesLoading}
+          />
+        </div>
+        <FilesMenu
+          show={showFilesMenu}
+          onClose={toggleFilesMenu}
+          fileType={fileType}
+          filesLoading={filesLoading}
+        />
       </div>
-      <ReplyBox
-        onSend={onSend}
-        messageText={messageText}
-        setMessageText={setMessageText}
-        isLoading={loading}
-        boxType={fileType}
-        files={files}
-        setFiles={setFiles}
-        setFilesLoading={setFilesLoading}
-      />
     </div>
   );
 };
 
 export default Documents;
+
+const MenuIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="21"
+    height="21"
+    viewBox="0 0 21 21"
+    fill="none"
+  >
+    <path
+      d="M5.25 4.375C5.25 5.34147 4.46647 6.125 3.5 6.125C2.53353 6.125 1.75 5.34147 1.75 4.375C1.75 3.40853 2.53353 2.625 3.5 2.625C4.46647 2.625 5.25 3.40853 5.25 4.375Z"
+      fill="black"
+    />
+    <path
+      d="M8.75 6.125H17.5C18.4625 6.125 19.25 5.3375 19.25 4.375C19.25 3.4125 18.4625 2.625 17.5 2.625H8.75C7.7875 2.625 7 3.4125 7 4.375C7 5.3375 7.7875 6.125 8.75 6.125Z"
+      fill="black"
+    />
+    <path
+      d="M5.25 10.5C5.25 11.4665 4.46647 12.25 3.5 12.25C2.53353 12.25 1.75 11.4665 1.75 10.5C1.75 9.53353 2.53353 8.75 3.5 8.75C4.46647 8.75 5.25 9.53353 5.25 10.5Z"
+      fill="black"
+    />
+    <path
+      d="M17.5 8.75H8.75C7.7875 8.75 7 9.5375 7 10.5C7 11.4625 7.7875 12.25 8.75 12.25H17.5C18.4625 12.25 19.25 11.4625 19.25 10.5C19.25 9.5375 18.4625 8.75 17.5 8.75Z"
+      fill="black"
+    />
+    <path
+      d="M5.25 16.625C5.25 17.5915 4.46647 18.375 3.5 18.375C2.53353 18.375 1.75 17.5915 1.75 16.625C1.75 15.6585 2.53353 14.875 3.5 14.875C4.46647 14.875 5.25 15.6585 5.25 16.625Z"
+      fill="black"
+    />
+    <path
+      d="M17.5 14.875H8.75C7.7875 14.875 7 15.6625 7 16.625C7 17.5875 7.7875 18.375 8.75 18.375H17.5C18.4625 18.375 19.25 17.5875 19.25 16.625C19.25 15.6625 18.4625 14.875 17.5 14.875Z"
+      fill="black"
+    />
+  </svg>
+);

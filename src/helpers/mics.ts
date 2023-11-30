@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { removeToken } from "./storage";
 
 export function getLastNElements(arr: any, n: number) {
@@ -21,4 +22,14 @@ export const resetFlow = async ({ logout = false }: { logout?: boolean }) => {
   if (logout) {
     await removeToken();
   }
+};
+
+export const showMsg = (msg: string) => {
+  toast.dismiss();
+  toast.success(msg);
+};
+
+export const showError = (msg: string) => {
+  toast.dismiss();
+  toast.error(msg);
 };
