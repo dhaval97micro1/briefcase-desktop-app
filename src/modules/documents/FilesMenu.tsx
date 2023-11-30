@@ -20,11 +20,8 @@ const FilesMenu = ({ show, onClose, fileType, filesLoading }: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     let userJSONified = getStoredUser();
-    console.log("userJSONified", userJSONified);
     if (userJSONified) {
-      console.log("userJSONified is true", userJSONified);
       const userInfo = JSON.parse(userJSONified);
-      console.log("userInfo UserID", userInfo.userId);
       setUserId(userInfo.userId);
     }
   }, [fileType]);
@@ -79,12 +76,12 @@ const FilesMenu = ({ show, onClose, fileType, filesLoading }: Props) => {
           </svg>
         </button>
       </header>
+      {(filesLoading || loading) && (
+        <div className="h-[50px] flex justify-center mb-4">
+          <Spinner />
+        </div>
+      )}
       <div className="flex flex-col max-h-full overflow-y-auto overflow-x-hidden">
-        {(filesLoading || loading) && (
-          <div className="h-[50px] flex justify-center">
-            <Spinner />
-          </div>
-        )}
         {files.map((file: FileType) => (
           <FileTag key={file.file_id} file={file} />
         ))}

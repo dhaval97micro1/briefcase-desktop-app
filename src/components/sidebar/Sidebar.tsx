@@ -61,8 +61,8 @@ const MENU = [
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="26"
-        height="26"
+        width="22"
+        height="22"
         viewBox="0 0 26 26"
         fill="none"
       >
@@ -80,7 +80,7 @@ const MENU = [
     subtitle: "Get things done.",
     path: "/todos",
     icon: (
-      <svg width="21" height="21" viewBox="0 0 21 21" fill="none">
+      <svg width="22" height="22" viewBox="0 0 21 21" fill="none">
         <path
           d="M16.6678 3.09576L7.96037 11.8039L4.33192 8.17514L1.28149 11.2257L7.96037 17.9041L19.7183 6.14636L16.6678 3.09576ZM1.57847 11.2257L4.33192 8.47194L7.96037 12.1007L16.6678 3.39256L19.4213 6.14636L7.96037 17.6071L1.57847 11.2257Z"
           fill="black"
@@ -125,8 +125,15 @@ const Sidebar = () => {
                 }
               )}
             >
-              {item.icon}
-              <div className="flex flex-col items-start ml-6 flex-1">
+              <span
+              // style={{ border: "1px solid red" }}
+              >
+                {item.icon}
+              </span>
+              <div
+                className="flex flex-col items-start ml-6 flex-1"
+                // style={{ border: "1px solid red" }}
+              >
                 <div className="text-lg font-medium">{item.title}</div>
                 <div className="text-[15px] text-[#282834] text-start">
                   {item.subtitle}

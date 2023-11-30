@@ -78,7 +78,7 @@ const NoteDetails = () => {
   const messagesEndRef = useRef<any>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
   };
 
   const goBack = () => {
@@ -313,7 +313,7 @@ const NoteDetails = () => {
                   <textarea
                     value={noteSummary}
                     onChange={onChangeSummary}
-                    className="w-full p-4 rounded-lg outline-none max-h-[60vh]"
+                    className="w-full p-4 rounded-lg outline-none max-h-[60vh] h-[60vh]"
                     autoFocus
                     id="edit-note-box"
                     ref={textAreaRef}
