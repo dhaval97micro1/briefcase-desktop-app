@@ -7,6 +7,7 @@ import Splash from "./modules/splash/Splash";
 import Todos from "./modules/todos/Todos";
 import Notes from "./modules/notes/Notes";
 import NoteDetails from "./modules/note-details/NoteDetails";
+import Code from "./modules/code/Code";
 
 function App() {
   return (
@@ -14,10 +15,21 @@ function App() {
       <Routes>
         <Route path="/login" element={<Splash />} />
         <Route element={<PageLayout />}>
-          <Route path="/documents" element={<Documents />} />
+          <Route
+            path="/docs"
+            element={<Documents key={"docs"} fileType={"docs"} />}
+          />
+          <Route
+            path="/sheets"
+            element={<Documents key={"sheets"} fileType={"sheets"} />}
+          />
           <Route path="/todos" element={<Todos />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/note-details" element={<NoteDetails />} />
+          <Route
+            path="/code"
+            element={<Code key={"code"} fileType={"code"} />}
+          />
         </Route>
         <Route index element={<Navigate to="/login" />} />
       </Routes>

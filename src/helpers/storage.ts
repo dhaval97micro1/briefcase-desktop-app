@@ -15,11 +15,11 @@ const getLastStoredTodos = () => {
 const storeTodos = (messages: string) => {
   return localStorage.setItem("lastTodos", messages);
 };
-const getLastStoredDocsChat = () => {
-  return localStorage.getItem("lastDocsChat");
+const getLastStoredDocsChat = (fileType: string) => {
+  return localStorage.getItem("lastDocsChat_" + fileType);
 };
-const storeDocsChat = (messages: string) => {
-  return localStorage.setItem("lastDocsChat", messages);
+const storeDocsChat = (fileType: string, messages: string) => {
+  return localStorage.setItem("lastDocsChat_"+ fileType, messages);
 };
 const storeUser = (user: UserDetailsType) => {
   localStorage.setItem("user", JSON.stringify(user));
