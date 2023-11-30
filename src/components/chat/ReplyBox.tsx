@@ -12,6 +12,7 @@ type Props = {
   files: File[] | null; // New state for files
   setFiles: (files: File[]) => void; // Function to update files state
   setFilesLoading: (filesLoading: boolean) => void; // Function to update files loading state
+  openSidePanel?: () => void; // Function to update files loading state
 };
 
 const ReplyBox = ({
@@ -22,6 +23,7 @@ const ReplyBox = ({
   files,
   setFiles,
   setFilesLoading,
+  openSidePanel,
 }: Props) => {
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -60,6 +62,7 @@ const ReplyBox = ({
   };
 
   const uploadFiles = async (filesToUpload: File[]) => {
+    openSidePanel && openSidePanel();
     if (filesToUpload && userId) {
       setFilesLoading(true);
       const uploadPromises = filesToUpload.map(async (file) => {

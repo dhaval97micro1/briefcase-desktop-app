@@ -125,12 +125,13 @@ const Documents = ({ fileType }: DocProps) => {
   };
 
   const handleUserChatHistory = async () => {
-  
     try {
       // Call the api at  /api/users/{userId}/files/query/chat-history and getthe list of chat history frm openai
       // @ts-ignore
       let userId = JSON.parse(user)?.userId;
-      const resp = await apiClient.get(`/users/${userId}/files/query/chat-history?file_type=${fileType}`);
+      const resp = await apiClient.get(
+        `/users/${userId}/files/query/chat-history?file_type=${fileType}`
+      );
       const res = resp?.data;
       if (res?.statusCode) {
         // Store the chat history in local storage
@@ -145,16 +146,15 @@ const Documents = ({ fileType }: DocProps) => {
         storeDocsChat(fileType, JSON.stringify(messages));
 
         getLastMessages();
-        
       } else {
         console.log("Error");
       }
-     
+
       setLoading(false);
     } catch (error) {
       setLoading(false);
     }
-  }
+  };
 
   const messagesAreaHeight = () => {
     const replyBoxHeight = document.getElementById("reply-box")?.offsetHeight;
@@ -202,6 +202,10 @@ const Documents = ({ fileType }: DocProps) => {
     }
   }, []);
 
+  const openSidePanel = () => {
+    setShowFilesMenu(true);
+  };
+
   return (
     <div className="ml-5 bg-white  rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2 overflow-x-hidden">
       {!showFilesMenu && (
@@ -238,6 +242,7 @@ const Documents = ({ fileType }: DocProps) => {
             files={files}
             setFiles={setFiles}
             setFilesLoading={setFilesLoading}
+            openSidePanel={openSidePanel}
           />
         </div>
         <FilesMenu
