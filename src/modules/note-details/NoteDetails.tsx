@@ -21,8 +21,22 @@ import { showError, showMsg } from "src/helpers/mics";
 import Spinner from "src/components/spinner";
 import WrappedContent from "src/components/WrappedContent";
 import styled from "styled-components";
+import useAutosizeTextArea from "src/helpers/hooks/useAutosizeTextArea";
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  textarea {
+    border: none;
+    resize: none;
+  }
+  textarea:focus {
+    border-color: transparent;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+  /* textarea::-webkit-scrollbar {
+    display: none;
+  } */
+`;
 
 const database = getDatabase(firebaseApp);
 
@@ -34,6 +48,10 @@ const NoteDetails = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [editingByText, setEditingByText] = useState<boolean>(false);
   const [noteSummary, setNoteSummary] = useState<string>("");
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  useAutosizeTextArea(textAreaRef.current, noteSummary);
 
   useEffect(() => {
     if (location?.state?.noteDetails) {
@@ -291,14 +309,14 @@ const NoteDetails = () => {
                 </pre>
               )}
               {!!editingByText && (
-                <div className="w-[700px] max-w-full flex flex-col">
+                <div className="w-full max-w-full flex flex-col">
                   <textarea
                     value={noteSummary}
                     onChange={onChangeSummary}
-                    className="w-[700px] max-w-full p-4 rounded-lg outline-none"
+                    className="w-full p-4 rounded-lg outline-none max-h-[60vh]"
                     autoFocus
-                    rows={6}
                     id="edit-note-box"
+                    ref={textAreaRef}
                   />
                 </div>
               )}

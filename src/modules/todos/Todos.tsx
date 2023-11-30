@@ -236,6 +236,9 @@ const Todos = () => {
         messageText={messageText}
         setMessageText={setMessageText}
         isLoading={loading}
+        files={null}
+        setFiles={() => {}}
+        setFilesLoading={() => {}}
       />
     </div>
   );
