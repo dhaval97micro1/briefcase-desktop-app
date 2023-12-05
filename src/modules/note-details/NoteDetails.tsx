@@ -305,7 +305,9 @@ const NoteDetails = () => {
                   title="Tap to edit"
                   onClick={startEditingBytext}
                 >
-                  <WrappedContent>{note.summary}</WrappedContent>
+                  <WrappedContent className="flex flex-col h-[60vh] max-h-[60vh] overflow-y-auto overflow-x-hidden">
+                    {note.summary}
+                  </WrappedContent>
                 </pre>
               )}
               {!!editingByText && (
