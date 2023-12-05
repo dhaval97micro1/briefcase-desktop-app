@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import styled from "styled-components";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 
 type Props = {
   message: {
@@ -12,16 +12,17 @@ type Props = {
 
 const StyledMessageBubble = styled.div`
   .system-message {
-    border-radius: 8px 8px 8px 0px;
+    border-radius: 24px 24px 24px 0px;
   }
   .sender-message {
-    border-radius: 8px 8px 0px 8px;
+    border-radius: 24px 24px 0px 24px;
   }
   pre {
-    font-family: "Outfit", sans-serif;
+    font-family: "Inter", sans-serif;
     word-break: break-word;
     overflow: hidden;
     white-space: pre-wrap;
+    color: #282834;
     p {
       margin: 0px;
     }
@@ -36,7 +37,7 @@ const MessageItem = ({ message }: Props) => {
       })}
     >
       <StyledMessageBubble className="flex items-end mt-4 max-w-[70%] gap-[5px] mx-4">
-        {!message?.isSent && (
+        {/* {!message?.isSent && (
           <span>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
@@ -56,17 +57,16 @@ const MessageItem = ({ message }: Props) => {
               />
             </svg>
           </span>
-        )}
+        )} */}
         <div
-          className={classNames("p-3 text-start", {
-            "border border-solid border-[#CDCFE5] sender-message":
-              message.isSent,
-            "bg-[#E0E2F8] system-message": !message.isSent,
+          className={classNames("text-start", {
+            "sender-message bg-[#EFEDEB] p-3": message.isSent,
+            "bg-[#DBD5FF] system-message p-4": !message.isSent,
           })}
         >
           <pre>
-          <ReactMarkdown>{message.message}
-          </ReactMarkdown></pre>
+            <ReactMarkdown>{message.message}</ReactMarkdown>
+          </pre>
         </div>
       </StyledMessageBubble>
     </div>

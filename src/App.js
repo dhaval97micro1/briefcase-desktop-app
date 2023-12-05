@@ -11,7 +11,7 @@ import Code from "./modules/code/Code";
 
 function App() {
   return (
-    <div className="App flex flex-col p-4 bg-[#E7E7E7]">
+    <div className="App flex flex-col p-4 bg-[#F5F5F5]">
       <Routes>
         <Route path="/login" element={<Splash />} />
         <Route element={<PageLayout />}>

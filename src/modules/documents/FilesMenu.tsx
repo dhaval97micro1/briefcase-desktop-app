@@ -36,6 +36,7 @@ const FilesMenu = ({ show, onClose, fileType, filesLoading }: Props) => {
     docs
       .getFilesList(payload)
       .then((res) => {
+        console.log("Files: ", res);
         setFiles(res);
         setLoading(false);
       })
@@ -56,7 +57,7 @@ const FilesMenu = ({ show, onClose, fileType, filesLoading }: Props) => {
       )}
     >
       <header className="flex items-center justify-between mb-4">
-        <div className="text-lg font-medium">Documents</div>
+        <div className="text-lg font-semibold">Documents</div>
 
         <button
           className="cursor-pointer rounded-lg hover:bg-[#efecec]"
@@ -83,7 +84,7 @@ const FilesMenu = ({ show, onClose, fileType, filesLoading }: Props) => {
       )}
       <div className="flex flex-col max-h-full overflow-y-auto overflow-x-hidden">
         {files.map((file: FileType) => (
-          <FileTag key={file.file_id} file={file} />
+          <FileTag key={file.id} file={file} />
         ))}
         {!filesLoading && files.length === 0 && !loading && (
           <span className="bg-blue-500 text-white px-2 py-1 rounded-full mr-2 whitespace-nowrap">

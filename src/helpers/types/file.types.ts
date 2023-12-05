@@ -1,5 +1,5 @@
 export interface FileType {
-  file_name: string;
-  file_type: string;
-  file_id: string;
+  fileName: string;
+  fileType: string;
+  id: string;
 }
