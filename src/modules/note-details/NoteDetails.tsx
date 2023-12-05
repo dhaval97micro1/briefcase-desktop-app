@@ -189,7 +189,7 @@ const NoteDetails = () => {
   }, [editingByText, noteSummary]);
 
   return (
-    <Wrapper className="ml-5 bg-white rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start gap-2">
+    <Wrapper className="ml-5 bg-white rounded-2xl h-[calc(100vh-32px)] flex-1 flex flex-col items-start gap-2">
       <div className="flex justify-between items-end w-full pr-4">
         <div
           className="flex items-center mx-5 mt-5 gap-3 cursor-pointer hover:opacity-75"
@@ -305,7 +305,9 @@ const NoteDetails = () => {
                   title="Tap to edit"
                   onClick={startEditingBytext}
                 >
-                  <WrappedContent>{note.summary}</WrappedContent>
+                  <WrappedContent className="flex flex-col h-[60vh] max-h-[60vh] overflow-y-auto overflow-x-hidden">
+                    {note.summary}
+                  </WrappedContent>
                 </pre>
               )}
               {!!editingByText && (

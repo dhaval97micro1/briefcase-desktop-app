@@ -92,7 +92,7 @@ const Notes = () => {
   };
 
   return (
-    <div className="ml-5 bg-white rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start gap-2">
+    <div className="ml-5 bg-white rounded-2xl h-[calc(100vh-32px)] flex-1 flex flex-col items-start gap-2">
       <div className="flex flex-col w-full h-full">
         {loading && <NotesLoader />}
         {!loading && (

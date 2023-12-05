@@ -207,7 +207,7 @@ const Documents = ({ fileType }: DocProps) => {
   };
 
   return (
-    <div className="ml-5 bg-white  rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2 overflow-x-hidden">
+    <div className="ml-5 bg-white rounded-2xl h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2 overflow-x-hidden shadow-[0px_2px_14px_0px_rgba(0,0,0,0.05)]">
       {!showFilesMenu && (
         <div
           onClick={toggleFilesMenu}
@@ -219,7 +219,7 @@ const Documents = ({ fileType }: DocProps) => {
       <div className="flex w-full flex-1 overflow-y-auto overflow-x-hidden pr-1 mb-1">
         <div className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1">
           <div
-            className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1"
+            className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-6"
             style={{
               height: messagesAreaHeight(),
             }}

@@ -6,7 +6,8 @@
 /* Add your custom styles here */
 
 * {
-  font-family: "Outfit", sans-serif !important;
+  /* font-family: "Outfit", sans-serif !important; */
+  font-family: "Inter", sans-serif !important;
 }
 
 body {
@@ -14,9 +15,10 @@ body {
   overflow: auto;
   height: 100% !important;
   width: 100%;
+  background-color: #f5f5f5;
 }
 
-@font-face {
+/* @font-face {
   font-family: "Outfit";
   src: local("Outfit"),
     url(./assets/fonts/Outfit-Regular.ttf) format("truetype");
@@ -39,7 +41,7 @@ body {
   font-family: "Outfit";
   font-weight: 700;
   src: local("Outfit"), url(./assets/fonts/Outfit-Bold.ttf) format("truetype");
-}
+} */
 
 body {
   margin: 0;
@@ -77,7 +79,6 @@ code {
     transform: scale(1, 1);
   }
 }
-
 
 @layer utilities {
   /* Chrome, Safari and Opera */

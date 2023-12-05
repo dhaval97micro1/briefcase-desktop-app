@@ -38,18 +38,30 @@ const MENU = [
     path: "/code",
     icon: (
       <svg
+        xmlns="http://www.w3.org/2000/svg"
         width="22"
         height="22"
-        viewBox="0 0 15 15"
+        viewBox="0 0 32 22"
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M0.877075 7.49985C0.877075 3.84216 3.84222 0.877014 7.49991 0.877014C11.1576 0.877014 14.1227 3.84216 14.1227 7.49985C14.1227 11.1575 11.1576 14.1227 7.49991 14.1227C3.84222 14.1227 0.877075 11.1575 0.877075 7.49985ZM3.78135 3.21565C4.68298 2.43239 5.83429 1.92904 7.09998 1.84089V6.53429L3.78135 3.21565ZM3.21567 3.78134C2.43242 4.68298 1.92909 5.83428 1.84095 7.09997H6.5343L3.21567 3.78134ZM6.5343 7.89997H1.84097C1.92916 9.16562 2.43253 10.3169 3.21579 11.2185L6.5343 7.89997ZM3.78149 11.7842C4.6831 12.5673 5.83435 13.0707 7.09998 13.1588V8.46566L3.78149 11.7842ZM7.89998 8.46566V13.1588C9.16559 13.0706 10.3168 12.5673 11.2184 11.7841L7.89998 8.46566ZM11.7841 11.2184C12.5673 10.3168 13.0707 9.16558 13.1588 7.89997H8.46567L11.7841 11.2184ZM8.46567 7.09997H13.1589C13.0707 5.83432 12.5674 4.68305 11.7842 3.78143L8.46567 7.09997ZM11.2185 3.21573C10.3169 2.43246 9.16565 1.92909 7.89998 1.8409V6.53429L11.2185 3.21573Z"
-          fill="currentColor"
           fill-rule="evenodd"
           clip-rule="evenodd"
-        ></path>
+          d="M15.5257 20.4583L18.6341 1.81014C18.7757 0.963308 18.2033 0.16277 17.3563 0.0218507C16.5067 -0.121079 15.708 0.452311 15.5695 1.29926L12.4611 19.9475C12.3195 20.7943 12.8919 21.5945 13.7388 21.7357C13.8254 21.7502 13.9096 21.7557 13.9955 21.7557C14.7414 21.7557 15.4003 21.2163 15.5258 20.4583L15.5257 20.4583Z"
+          fill="#1F1F1F"
+        />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M22.7955 18.2558L31.0949 10.8777L23.2318 3.88785C22.5896 3.31747 21.6078 3.37496 21.0391 4.01702C20.4705 4.65875 20.5262 5.64103 21.1683 6.21141L26.418 10.8776L20.7319 15.9309C20.0898 16.5016 20.0324 17.4834 20.6028 18.1256C20.9089 18.4723 21.3363 18.6474 21.7633 18.6474C22.1299 18.6474 22.4999 18.5183 22.7954 18.2558L22.7955 18.2558Z"
+          fill="#1F1F1F"
+        />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M8.89484 18.2595C8.52823 18.2595 8.15826 18.13 7.8628 17.8675L0 10.8777L8.29941 3.49958C8.93945 2.93235 9.92173 2.98669 10.4921 3.62875C11.062 4.27048 11.0043 5.25242 10.3626 5.82314L4.67658 10.8779L9.92627 15.5432C10.5685 16.1136 10.6258 17.0954 10.0558 17.7376C9.74935 18.084 9.32189 18.2597 8.8949 18.2597L8.89484 18.2595Z"
+          fill="#1F1F1F"
+        />
       </svg>
     ),
   },
@@ -112,24 +124,20 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-[25%] min-w-[352px] bg-white rounded-lg h-[calc(100vh-32px)] pt-6 flex flex-col">
+    <div className="max-w-[25%] w-[400px] bg-white rounded-2xl h-[calc(100vh-32px)] pt-2 flex flex-col shadow-[0px_2px_14px_0px_rgba(0,0,0,0.05)]">
       <div className="flex-1">
         {MENU.map((item) => (
           <div key={item.title}>
             <Link
               to={item.path}
               className={classNames(
-                "flex items-center px-4 py-4 mx-4 my-2 cursor-pointer hover:bg-[#EDEDED] rounded-lg",
+                "flex items-center px-4 py-4 mx-3 my-2 cursor-pointer hover:bg-[#EBE8E2] rounded-lg",
                 {
-                  "bg-[#EDEDED]": location.pathname.includes(item.path),
+                  "bg-[#EBE8E2]": location.pathname.includes(item.path),
                 }
               )}
             >
-              <span
-              // style={{ border: "1px solid red" }}
-              >
-                {item.icon}
-              </span>
+              <span>{item.icon}</span>
               <div
                 className="flex flex-col items-start ml-6 flex-1"
                 // style={{ border: "1px solid red" }}
@@ -150,19 +158,17 @@ const Sidebar = () => {
           </div>
         ))}
       </div>
-      <button onClick={logout} className="mb-2 text-red-600 text-base">
+      {/* <button onClick={logout} className="mb-2 text-red-600 text-base">
         Logout
-      </button>
-      <div className="mb-6 flex items-center justify-center gap-1.5">
+      </button> */}
+      <div className="mb-6 flex flex-col items-center justify-center gap-1.5">
         <ProfileThumbnail
           image={user?.userImage}
           firstName={user?.firstName}
           lastName={user?.lastName}
         />
-        <div className="text-sm text-gray-500">
-          <span className="font-medium">
-            {user?.firstName} {user?.lastName}
-          </span>
+        <div className="text-xl text-gray-500">
+          {user?.firstName} {user?.lastName}
         </div>
       </div>
     </div>

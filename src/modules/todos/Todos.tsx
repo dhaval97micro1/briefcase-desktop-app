@@ -90,7 +90,7 @@ const Todos = () => {
   const messagesEndRef = useRef<any>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({  behavior: "instant"  });
+    messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
   };
 
   const storeToLocalStorage = async (newMsg: any) => {
@@ -202,7 +202,7 @@ const Todos = () => {
   };
 
   return (
-    <div className="ml-5 bg-white rounded-lg h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2">
+    <div className="ml-5 bg-white rounded-2xl h-[calc(100vh-32px)] flex-1 flex flex-col items-start p-4 gap-2">
       <div
         className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1"
         style={{
