@@ -97,16 +97,50 @@ const Documents = ({ fileType }: DocProps) => {
         );
         const res = resp?.data;
         if (res?.statusCode) {
+
+          // This means that the run has been init
+          let run_id = res?.body?.run_id;
+
+          // We will loop every two seconds to check if the run has been complted
+          var run_complete = false;
+          var message = "";
+          var total_polls = 0;
+
+          while (run_complete === false) {
+
+            // Wait for 1500 ms
+            await new Promise((resolve) => setTimeout(resolve, 3500));
+
+            let run_poll_resp = await apiClient.post(
+              `/users/${userId}/files/poll/run?file_type=${fileType}&q=${query}`,
+              {run_id,  file_type: fileType}
+            );
+
+            if (total_polls > 30) {
+              run_complete = true;
+              message = "";
+            }
+
+            if (run_poll_resp?.data?.body?.completed === true) {
+              run_complete=true
+              message = run_poll_resp?.data?.body?.message;
+            }
+
+            total_polls+=1
+
+          }
+
+
           const newSysMessageId = new Date().getTime();
           storeToLocalStorage({
-            message: res?.body?.message || "Sorry, please try again!",
+            message: message || "Sorry, please try again!",
             id: `msg-${newSysMessageId}`,
             isSent: false,
           });
           setMessages((prev) => [
             ...prev,
             {
-              message: res?.body?.message || "Sorry, please try again!",
+              message: message || "Sorry, please try again!",
               id: `msg-${newSysMessageId}`,
               isSent: false,
             },
