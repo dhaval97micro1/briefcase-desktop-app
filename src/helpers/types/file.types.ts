@@ -1,5 +1,9 @@
 export interface FileType {
-  fileName: string;
-  fileType: string;
   id: string;
+  fileName: string;
+  fileSummary: string;
+  fileType: string;
+  fileClass: string;
+  createdAt: number;
+  openAiFileId: string;
 }
