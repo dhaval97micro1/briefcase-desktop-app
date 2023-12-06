@@ -87,19 +87,19 @@ const MENU = [
       </svg>
     ),
   },
-  {
-    title: "To-Do's",
-    subtitle: "Get things done.",
-    path: "/todos",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 21 21" fill="none">
-        <path
-          d="M16.6678 3.09576L7.96037 11.8039L4.33192 8.17514L1.28149 11.2257L7.96037 17.9041L19.7183 6.14636L16.6678 3.09576ZM1.57847 11.2257L4.33192 8.47194L7.96037 12.1007L16.6678 3.39256L19.4213 6.14636L7.96037 17.6071L1.57847 11.2257Z"
-          fill="black"
-        />
-      </svg>
-    ),
-  },
+  // {
+  //   title: "To-Do's",
+  //   subtitle: "Get things done.",
+  //   path: "/todos",
+  //   icon: (
+  //     <svg width="22" height="22" viewBox="0 0 21 21" fill="none">
+  //       <path
+  //         d="M16.6678 3.09576L7.96037 11.8039L4.33192 8.17514L1.28149 11.2257L7.96037 17.9041L19.7183 6.14636L16.6678 3.09576ZM1.57847 11.2257L4.33192 8.47194L7.96037 12.1007L16.6678 3.39256L19.4213 6.14636L7.96037 17.6071L1.57847 11.2257Z"
+  //         fill="black"
+  //       />
+  //     </svg>
+  //   ),
+  // },
 ];
 const Sidebar = () => {
   const [user, setUser] = useState<UserDetailsType | null>(null);
