@@ -85,7 +85,7 @@ const FilesMenu = ({ show, onClose, fileType, filesLoading }: Props) => {
       )}
       <div className="flex flex-col max-h-full overflow-y-auto overflow-x-hidden">
         {files.map((file: FileType) => (
-          <FileTag key={file.id} file={file} />
+          <FileTag key={file.id} file={file} files={files} setFiles={setFiles} />
         ))}
         {!filesLoading && files.length === 0 && !loading && (
           <span className="bg-blue-500 text-white px-2 py-1 rounded-full mr-2 whitespace-nowrap">
