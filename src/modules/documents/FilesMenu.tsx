@@ -36,7 +36,8 @@ const FilesMenu = ({ show, onClose, fileType, filesLoading }: Props) => {
     docs
       .getFilesList(payload)
       .then((res) => {
-        console.log("Files: ", res);
+        // Reverse the array to show the latest files first
+        res.reverse();
         setFiles(res);
         setLoading(false);
       })
