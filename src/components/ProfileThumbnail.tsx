@@ -7,13 +7,13 @@ const ProfileThumbnail = (user: {
     return (
       <img
         src={user?.image}
-        className="h-12 w-12 rounded-full"
+        className="h-10 w-10 rounded-full"
         alt="profile-avatar"
       />
     );
   }
   return (
-    <div className="h-12 w-12 rounded-full flex justify-center items-center">
+    <div className="h-10 w-10 rounded-full flex justify-center items-center">
       {(user?.firstName + " " + user?.lastName)
         ?.split(" ")
         ?.slice(0, 2)

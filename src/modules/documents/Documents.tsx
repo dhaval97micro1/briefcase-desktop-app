@@ -211,13 +211,13 @@ const Documents = ({ fileType }: DocProps) => {
       {!showFilesMenu && (
         <div
           onClick={toggleFilesMenu}
-          className="z-[9] cursor-pointer p-2 rounded-lg hover:bg-gray-100 border border-solid border-[#EAEAEA] absolute right-10"
+          className="z-[9] cursor-pointer p-2 rounded-lg hover:bg-gray-100 border border-solid border-[#EAEAEA] absolute right-8"
         >
           <MenuIcon />
         </div>
       )}
-      <div className="flex w-full flex-1 overflow-y-auto overflow-x-hidden pr-1 mb-1">
-        <div className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1">
+      <div className="flex w-full flex-1 overflow-y-auto overflow-x-hidden pr-1 mt-12">
+        <div className="flex flex-col w-full flex-1 overflow-auto pr-1">
           <div
             className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-6"
             style={{

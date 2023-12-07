@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
-import { FileIcon } from "@radix-ui/react-icons"; // Assuming Radix icons are used
 import { getStoredUser } from "src/helpers/storage";
 import apiClient from "src/helpers/http/client";
+import MicIcon from "./MicIcon";
+import KeyboardIcon from "./KeyboardIcon";
 
 type Props = {
   messageText: string;
@@ -26,6 +27,7 @@ const ReplyBox = ({
   openSidePanel,
 }: Props) => {
   const [userId, setUserId] = useState<string | null>(null);
+  const [showKeyboard, setShowKeyboard] = useState<boolean>(false);
 
   useEffect(() => {
     let userJSONified = getStoredUser();
@@ -101,10 +103,13 @@ const ReplyBox = ({
   const onFileClick = () => {
     document.getElementById("file-upload")?.click();
   };
+  const toggleKeyboard = () => {
+    setShowKeyboard((prev) => !prev);
+  };
 
   return (
     <form
-      className="flex items-center w-full"
+      className="flex items-end w-full mb-4"
       onSubmit={onSubmit}
       id="reply-box"
     >
@@ -147,23 +152,23 @@ const ReplyBox = ({
         style={{ display: "none" }}
         onChange={onFileChange}
       />
-      <input
-        placeholder="Start typing…"
-        value={messageText}
-        onChange={onChange}
-        className="w-full focus:outline-none rounded-[30px] bg-[#f1f0f0] h-[54px] px-7"
-      />
-      <button
-        onClick={(e) => {
-          onSubmit(e);
-        }}
-        disabled={messageText === "" || isLoading}
-        className={classNames("p-2 rounded-full", {
-          "cursor-pointer hover:bg-[lightgray]":
-            messageText !== "" && !isLoading,
-          "opacity-60": messageText === "" || isLoading,
-        })}
-      ></button>
+      <div className="flex flex-col w-full justify-center items-center overflow-hidden">
+        <MicIcon />
+        <input
+          placeholder="Start typing…"
+          value={messageText}
+          onChange={onChange}
+          className={classNames(
+            "w-full transition-all duration-200 outline-none focus:outline-none rounded-[30px] bg-[#f1f0f0] h-[54px] px-7 mt-5",
+            {
+              "h-0 mt-0": !showKeyboard,
+            }
+          )}
+        />
+      </div>
+      <button className="ml-4 mb-2" onClick={toggleKeyboard}>
+        <KeyboardIcon />
+      </button>
     </form>
   );
 };

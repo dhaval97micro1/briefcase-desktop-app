@@ -49,10 +49,10 @@ const FilesMenu = ({ show, onClose, fileType, filesLoading }: Props) => {
   return (
     <div
       className={classNames(
-        "transition-all duration-300 flex flex-col bg-[rgba(248,248,248,1)] rounded-lg p-4",
+        "transition-all duration-300 flex flex-col bg-[rgba(248,248,248,1)] rounded-lg",
         {
-          "opacity-0 w-[0px] overflow-hidden": !show,
-          "w-[30%]": show,
+          "opacity-0 w-[0px] overflow-hidden p-0": !show,
+          "w-[30%] p-4": show,
         }
       )}
     >
