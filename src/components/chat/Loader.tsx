@@ -2,14 +2,14 @@ import styled from "styled-components";
 
 const StyledMessageBubble = styled.div`
   .system-message {
-    border-radius: 8px 8px 8px 0px;
+    border-radius: 24px 24px 24px 0px;
   }
 `;
 
 const Loader = () => {
   return (
     <StyledMessageBubble className="flex items-end mt-4 max-w-[70%] gap-[5px]">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      {/* <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path
           d="M0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24H0V12Z"
           fill="white"
@@ -25,8 +25,8 @@ const Loader = () => {
           stroke="rgba(36, 0, 255, 0.13)"
           stroke-width="0.76735"
         />
-      </svg>
-      <div className="p-3 bg-[#E0E2F8] system-message">
+      </svg> */}
+      <div className="p-3 bg-[#DBD5FF] system-message">
         <svg
           width="60"
           height="16"
