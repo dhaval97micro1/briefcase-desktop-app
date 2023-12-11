@@ -8,7 +8,7 @@ import ProfileThumbnail from "../ProfileThumbnail";
 const MENU = [
   {
     title: "Documents",
-    subtitle: "Get answers, generate scenarios and content.",
+    subtitle: "Talk to all your docs, generate legal docs",
     path: "/docs",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -21,7 +21,7 @@ const MENU = [
   },
   {
     title: "Spreadsheets",
-    subtitle: "Query numbers, build reports and chart anything.",
+    subtitle: "Run math on your spreadsheets",
     path: "/sheets",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -34,7 +34,7 @@ const MENU = [
   },
   {
     title: "Code",
-    subtitle: "Know your repos, get ahead of bugs & ship fast.",
+    subtitle: "Talk to your codebase, generate code",
     path: "/code",
     icon: (
       <svg
@@ -68,7 +68,7 @@ const MENU = [
   {
     title: "Notes",
     subtitle:
-      "Ramble on about anything and Briefcase will organize your thoughts into a beautiful note.",
+      "Organize your thoughts and rewrite them in any style or language",
     path: "/notes",
     icon: (
       <svg
