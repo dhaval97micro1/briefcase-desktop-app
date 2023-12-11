@@ -51,7 +51,7 @@ const NoteDetails = () => {
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-  useAutosizeTextArea(textAreaRef.current, noteSummary);
+  // useAutosizeTextArea(textAreaRef.current, noteSummary);
 
   useEffect(() => {
     if (location?.state?.noteDetails) {
@@ -91,6 +91,12 @@ const NoteDetails = () => {
   };
 
   const onChangeSummary = (e: any) => {
+    // const pointer = e.target.selectionStart;
+    // const element = e.target;
+    // window.requestAnimationFrame(() => {
+    //   element.selectionStart = pointer;
+    //   element.selectionEnd = pointer;
+    // });
     setNoteSummary(e.target.value);
   };
 
@@ -176,17 +182,27 @@ const NoteDetails = () => {
     });
   };
 
-  useEffect(() => {
-    if (!!editingByText && !!noteSummary) {
-      const input: any = document.getElementById("edit-note-box");
-      if (input) {
-        const end = input.value.length;
+  // useEffect(() => {
+  //   if (!!editingByText && !!noteSummary) {
+  //     const input: any = document.getElementById("edit-note-box");
+  //     if (input) {
+  //       const end = input.value.length;
 
-        input.setSelectionRange(end, end);
-        input.focus();
-      }
-    }
-  }, [editingByText, noteSummary]);
+  //       input.setSelectionRange(end, end);
+  //       input.focus();
+  //     }
+  //   }
+  // }, [editingByText, noteSummary]);
+
+  // useEffect(() => {
+  //   if (!!editingByText && !!noteSummary && textAreaRef.current) {
+  //     const input = textAreaRef.current;
+  //     const end = input.value.length;
+
+  //     input.setSelectionRange(end, end);
+  //     input.focus();
+  //   }
+  // }, [editingByText, noteSummary, textAreaRef]);
 
   return (
     <Wrapper className="ml-5 bg-white rounded-2xl h-[calc(100vh-32px)] flex-1 flex flex-col items-start gap-2">

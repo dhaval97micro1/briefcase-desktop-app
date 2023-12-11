@@ -97,7 +97,6 @@ const Documents = ({ fileType }: DocProps) => {
         );
         const res = resp?.data;
         if (res?.statusCode) {
-
           // This means that the run has been init
           let run_id = res?.body?.run_id;
 
@@ -107,13 +106,12 @@ const Documents = ({ fileType }: DocProps) => {
           var total_polls = 0;
 
           while (run_complete === false) {
-
             // Wait for 1500 ms
             await new Promise((resolve) => setTimeout(resolve, 3500));
 
             let run_poll_resp = await apiClient.post(
               `/users/${userId}/files/poll/run?file_type=${fileType}&q=${query}`,
-              {run_id,  file_type: fileType}
+              { run_id, file_type: fileType }
             );
 
             if (total_polls > 30) {
@@ -122,14 +120,12 @@ const Documents = ({ fileType }: DocProps) => {
             }
 
             if (run_poll_resp?.data?.body?.completed === true) {
-              run_complete=true
+              run_complete = true;
               message = run_poll_resp?.data?.body?.message;
             }
 
-            total_polls+=1
-
+            total_polls += 1;
           }
-
 
           const newSysMessageId = new Date().getTime();
           storeToLocalStorage({
@@ -245,15 +241,15 @@ const Documents = ({ fileType }: DocProps) => {
       {!showFilesMenu && (
         <div
           onClick={toggleFilesMenu}
-          className="z-[9] cursor-pointer p-2 rounded-lg hover:bg-gray-100 border border-solid border-[#EAEAEA] absolute right-10"
+          className="z-[9] cursor-pointer p-2 rounded-lg hover:bg-gray-100 border border-solid border-[#EAEAEA] absolute right-8"
         >
           <MenuIcon />
         </div>
       )}
-      <div className="flex w-full flex-1 overflow-y-auto overflow-x-hidden pr-1 mb-1">
-        <div className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-1">
+      <div className="flex w-full flex-1 overflow-y-auto overflow-x-hidden pr-1">
+        <div className="flex flex-col w-full flex-1 overflow-auto pr-1">
           <div
-            className="flex flex-col w-full flex-1 overflow-auto pr-1 mb-6"
+            className="flex flex-col w-full flex-1 overflow-auto pr-6 mb-6"
             style={{
               height: messagesAreaHeight(),
             }}

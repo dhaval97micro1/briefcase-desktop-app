@@ -8,7 +8,7 @@ import ProfileThumbnail from "../ProfileThumbnail";
 const MENU = [
   {
     title: "Documents",
-    subtitle: "Get answers, generate scenarios and content.",
+    subtitle: "Talk to all your docs, generate legal docs",
     path: "/docs",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -21,7 +21,7 @@ const MENU = [
   },
   {
     title: "Spreadsheets",
-    subtitle: "Query numbers, build reports and chart anything.",
+    subtitle: "Run math on your spreadsheets",
     path: "/sheets",
     icon: (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -34,7 +34,7 @@ const MENU = [
   },
   {
     title: "Code",
-    subtitle: "Know your repos, get ahead of bugs & ship fast.",
+    subtitle: "Talk to your codebase, generate code",
     path: "/code",
     icon: (
       <svg
@@ -68,7 +68,7 @@ const MENU = [
   {
     title: "Notes",
     subtitle:
-      "Ramble on about anything and Briefcase will organize your thoughts into a beautiful note.",
+      "Organize your thoughts and rewrite them in any style or language",
     path: "/notes",
     icon: (
       <svg
@@ -142,17 +142,17 @@ const Sidebar = () => {
                 className="flex flex-col items-start ml-6 flex-1"
                 // style={{ border: "1px solid red" }}
               >
-                <div className="text-lg font-medium">{item.title}</div>
-                <div className="text-[15px] text-[#282834] text-start">
+                <div className="text-[15px] font-bold">{item.title}</div>
+                <div className="text-xs text-[#282834] text-start">
                   {item.subtitle}
                 </div>
               </div>
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              {/* <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                 <path
                   d="M10.8 7.53127C10.7999 7.65554 10.7505 7.77468 10.6625 7.86252L5.03753 13.4563C4.95081 13.5493 4.83 13.6031 4.70287 13.6054C4.57567 13.6076 4.45307 13.5581 4.36312 13.4682C4.27317 13.3782 4.22367 13.2556 4.2259 13.1284C4.22815 13.0013 4.28196 12.8805 4.37503 12.7938L9.66253 7.50002L4.33753 2.17502C4.2636 2.05232 4.24988 1.90256 4.30017 1.76848C4.35052 1.6344 4.4594 1.53065 4.59577 1.48685C4.73215 1.4431 4.88102 1.46404 5.00002 1.54378L10.6563 7.20003C10.7465 7.2868 10.7983 7.40607 10.8 7.53127Z"
                   fill="gray"
                 />
-              </svg>
+              </svg> */}
             </Link>
             <div className="separator h-px w-full mx-4 bg-[#EBEBEB]" />
           </div>
@@ -161,16 +161,19 @@ const Sidebar = () => {
       {/* <button onClick={logout} className="mb-2 text-red-600 text-base">
         Logout
       </button> */}
-      <div className="mb-6 flex flex-col items-center justify-center gap-1.5">
+      <div className="flex flex-col items-center justify-center gap-1.5">
         <ProfileThumbnail
           image={user?.userImage}
           firstName={user?.firstName}
           lastName={user?.lastName}
         />
-        <div className="text-xl text-gray-500">
+        <div className="text-base text-gray-500">
           {user?.firstName} {user?.lastName}
         </div>
       </div>
+      <button onClick={logout} className="my-2 text-red-600 text-sm">
+        Logout
+      </button>
     </div>
   );
 };

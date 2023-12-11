@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
-import { FileIcon } from "@radix-ui/react-icons"; // Assuming Radix icons are used
+import MicRecorder from "mic-recorder-to-mp3";
 import { getStoredUser } from "src/helpers/storage";
 import apiClient from "src/helpers/http/client";
+import KeyboardIcon from "./KeyboardIcon";
+import { BASE_API_URL } from "src/consts/API_URLS";
+import axios from "axios";
 
 type Props = {
   messageText: string;
@@ -15,6 +18,10 @@ type Props = {
   openSidePanel?: () => void; // Function to update files loading state
 };
 
+const recorder = new MicRecorder({
+  bitRate: 128,
+});
+
 const ReplyBox = ({
   onSend,
   messageText,
@@ -26,6 +33,9 @@ const ReplyBox = ({
   openSidePanel,
 }: Props) => {
   const [userId, setUserId] = useState<string | null>(null);
+  const [showKeyboard, setShowKeyboard] = useState<boolean>(false);
+  const [isRecording, setRecording] = useState<boolean>(false);
+  const [isSummarizing, setIsSummarizing] = useState<boolean>(false);
 
   useEffect(() => {
     let userJSONified = getStoredUser();
@@ -67,6 +77,7 @@ const ReplyBox = ({
       setFilesLoading(true);
       const uploadPromises = filesToUpload.map(async (file) => {
         const file_b64 = await toBase64(file);
+        console.log("file_b64: " + file_b64);
         const file_name = file.name;
         // Extracting file extension
         const file_extension = file_name.split(".").pop();
@@ -101,10 +112,85 @@ const ReplyBox = ({
   const onFileClick = () => {
     document.getElementById("file-upload")?.click();
   };
+  const toggleKeyboard = () => {
+    setShowKeyboard((prev) => !prev);
+  };
+
+  const onRecord = () => {
+    if (isRecording) {
+      onStopRecord();
+    } else {
+      onStartRecord();
+    }
+    setRecording((prev) => !prev);
+  };
+
+  const onStartRecord = async () => {
+    const audio = new Audio("/audios/start.mp3");
+    audio.play();
+    recorder
+      .start()
+      .then(() => {
+        setRecording(true);
+        // something else
+      })
+      .catch((e: any) => {
+        console.error(e);
+        setRecording(false);
+      });
+  };
+
+  const onStopRecord = async () => {
+    const audio = new Audio("/audios/start.mp3");
+    audio.play();
+    setIsSummarizing(true);
+    recorder
+      .stop()
+      .getMp3()
+      .then(([buffer, blob]: any) => {
+        // do what ever you want with buffer and blob
+        // Example: Create a mp3 file and play
+        const file = new File(buffer, "new-recording.mp3", {
+          type: blob.type,
+          // name: "audio.mp4",
+        });
+        uploadToApi(file);
+        console.log(JSON.stringify(file));
+        // setFile(file);
+      });
+  };
+
+  const uploadToApi = async (file: any) => {
+    const apiUrl = `${BASE_API_URL}/transcribe`;
+
+    // const filePath = path;
+
+    const formData: any = new FormData();
+    formData.append("key", file);
+
+    try {
+      const response = await axios.post(apiUrl, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setIsSummarizing(false);
+      console.log("response: " + JSON.stringify(response.data));
+      if (response?.data?.text) {
+        onSend(response?.data?.text);
+      } else {
+        // showError('Something went wrong');
+      }
+    } catch (error: any) {
+      console.error("Error:", error);
+      // showError(error?.message);
+      setIsSummarizing(false);
+    }
+  };
 
   return (
     <form
-      className="flex items-center w-full"
+      className="flex items-end w-full mb-4"
       onSubmit={onSubmit}
       id="reply-box"
     >
@@ -147,23 +233,67 @@ const ReplyBox = ({
         style={{ display: "none" }}
         onChange={onFileChange}
       />
-      <input
-        placeholder="Start typing…"
-        value={messageText}
-        onChange={onChange}
-        className="w-full focus:outline-none rounded-[30px] bg-[#f1f0f0] h-[54px] px-7"
-      />
-      <button
-        onClick={(e) => {
-          onSubmit(e);
-        }}
-        disabled={messageText === "" || isLoading}
-        className={classNames("p-2 rounded-full", {
-          "cursor-pointer hover:bg-[lightgray]":
-            messageText !== "" && !isLoading,
-          "opacity-60": messageText === "" || isLoading,
-        })}
-      ></button>
+      <div className="flex flex-col w-full justify-center items-center overflow-hidden">
+        <div
+          className={classNames(
+            "group rounded-full cursor-pointer transition duration-100",
+            {
+              "animate-pulse bg-gray-100": isRecording,
+            }
+          )}
+          onClick={onRecord}
+        >
+          <svg
+            width="87"
+            height="87"
+            viewBox="0 0 87 87"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="43.5"
+              cy="43.5"
+              r="42.5"
+              stroke-width="1"
+              className="stroke-[#BBBBBB] group-hover:stroke-black duration-100 transition"
+            />
+            <circle
+              cx="43.5"
+              cy="43.5"
+              r="38.25"
+              className={classNames("", {
+                "fill-red-500": isRecording,
+                "fill-white": !isRecording,
+              })}
+            />
+            <path
+              d="M42.2286 57.5335V57.0961L41.795 57.038C35.5533 56.2008 30.7184 50.8525 30.7184 44.3852C30.7184 43.6829 31.287 43.1143 31.9893 43.1143C32.6915 43.1143 33.2601 43.6829 33.2601 44.3852C33.2601 50.0317 37.8535 54.625 43.5 54.625C49.1465 54.625 53.7398 50.0314 53.7398 44.3852C53.7398 43.6829 54.3084 43.1143 55.0107 43.1143C55.6948 43.1143 56.252 43.6538 56.2804 44.3309V44.3852C56.2804 50.8503 51.4456 56.2007 45.2038 57.038L44.7702 57.0961V57.5335V61.208V61.708H45.2702H47.0411C47.7433 61.708 48.3119 62.2766 48.3119 62.9788C48.3119 63.6811 47.7433 64.2497 47.0411 64.2497H39.9577C39.2555 64.2497 38.6869 63.6811 38.6869 62.9788C38.6869 62.2766 39.2555 61.708 39.9577 61.708H41.7286H42.2286V61.208V57.5335Z"
+              stroke="#959595"
+              className="fill-[#F3F3F3] group-hover:stroke-black duration-100 transition"
+            />
+            <path
+              d="M50.9685 43.5C50.9685 47.6175 47.6177 50.9685 43.5 50.9685C39.3825 50.9685 36.0315 47.6177 36.0315 43.5V30.2185C36.0315 26.101 39.3825 22.75 43.5 22.75C47.6175 22.75 50.9685 26.1007 50.9685 30.2185V43.5Z"
+              stroke="#959595"
+              className="fill-[#F3F3F3] group-hover:stroke-black duration-100 transition"
+            />
+          </svg>
+        </div>
+        <input
+          placeholder="Start typing…"
+          value={messageText}
+          onChange={onChange}
+          className={classNames(
+            "w-full transition-all duration-200 outline-none focus:outline-none rounded-[30px] bg-[#f1f0f0] px-7",
+            {
+              "h-0 mt-0": !showKeyboard,
+              "h-[54px] mt-5": showKeyboard,
+            }
+          )}
+        />
+      </div>
+      <button className="ml-4 mb-2" onClick={toggleKeyboard}>
+        <KeyboardIcon />
+      </button>
     </form>
   );
 };

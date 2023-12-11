@@ -50,10 +50,10 @@ const FilesMenu = ({ show, onClose, fileType, filesLoading }: Props) => {
   return (
     <div
       className={classNames(
-        "transition-all duration-300 flex flex-col bg-[rgba(248,248,248,1)] rounded-lg p-4",
+        "transition-all duration-300 flex flex-col bg-[rgba(248,248,248,1)] rounded-lg",
         {
-          "opacity-0 w-[0px] overflow-hidden": !show,
-          "w-[30%]": show,
+          "opacity-0 w-[0px] overflow-hidden p-0": !show,
+          "w-[30%] p-4": show,
         }
       )}
     >
@@ -85,7 +85,12 @@ const FilesMenu = ({ show, onClose, fileType, filesLoading }: Props) => {
       )}
       <div className="flex flex-col max-h-full overflow-y-auto overflow-x-hidden">
         {files.map((file: FileType) => (
-          <FileTag key={file.id} file={file} files={files} setFiles={setFiles} />
+          <FileTag
+            key={file.id}
+            file={file}
+            files={files}
+            setFiles={setFiles}
+          />
         ))}
         {!filesLoading && files.length === 0 && !loading && (
           <span className="bg-blue-500 text-white px-2 py-1 rounded-full mr-2 whitespace-nowrap">
